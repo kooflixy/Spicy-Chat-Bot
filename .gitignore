@@ -178,3 +178,6 @@ venv/
 
 # Python VS Code debug
 .vscode/
+
+# Secret info
+config.py
