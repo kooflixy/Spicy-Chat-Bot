@@ -181,3 +181,6 @@ venv/
 
 # Secret info
 config.py
+
+# Tests
+test.py
