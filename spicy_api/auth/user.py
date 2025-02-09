@@ -2,6 +2,7 @@ import logging
 import aiohttp
 
 from spicy_api import settings
+from spicy_api.auth.exceptions import SpicyUserIsNotActivated
 from spicy_api.contrib.repeats import async_retry
 
 logger = logging.getLogger(__name__)
@@ -9,7 +10,7 @@ logger = logging.getLogger(__name__)
 class SpicyAuth:
     @staticmethod
     @async_retry
-    async def get_bearer_n_refresh(refresh_token: str) -> str:
+    async def get_bearer_n_refresh(refresh_token: str) -> dict:
         async with aiohttp.ClientSession() as session:
             payload = {
                 "grant_type": "refresh_token",
@@ -39,11 +40,16 @@ class SpicyUser:
 
     _is_activated = False
 
+    def __getattr__(self, attr: str):
+        if attr == 'bearer' or attr == 'refresh_token':
+            raise SpicyUserIsNotActivated(f'{self} hasn\'t bearer. To get it, please, activate your SpicyUser: "await SpicyUser().activate(refresh_token=YOUR_REFRESH_TOKEN)"')
+
+
 
     async def _get_tokens(self, refresh_token: str):
         data = await SpicyAuth.get_bearer_n_refresh(refresh_token)
-        self.bearer = data['access_token']
-        self.refresh_token = data['refresh_token']
+        self.bearer: str = data['access_token']
+        self.refresh_token: str = data['refresh_token']
 
 
     async def activate(self, refresh_token: str):
