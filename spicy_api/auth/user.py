@@ -1,13 +1,14 @@
 import logging
 import aiohttp
-from pydantic import BaseModel
 
 from spicy_api import settings
+from spicy_api.contrib.repeats import async_retry
 
 logger = logging.getLogger(__name__)
 
 class SpicyAuth:
     @staticmethod
+    @async_retry
     async def get_bearer_n_refresh(refresh_token: str) -> str:
         async with aiohttp.ClientSession() as session:
             payload = {
@@ -28,7 +29,16 @@ class SpicyAuth:
 
 
 class SpicyUser:
+    '''This class represents a logged-in SpicyChat user.
+
+    Usage example:
+    async def login():
+        user = SpicyUser()
+        await user.activate(refresh_token=YOUR_REFRESH_TOKEN)
+    '''
+
     _is_activated = False
+
 
     async def _get_tokens(self, refresh_token: str):
         data = await SpicyAuth.get_bearer_n_refresh(refresh_token)
