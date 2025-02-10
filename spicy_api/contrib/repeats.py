@@ -3,7 +3,7 @@ import logging
 
 from spicy_api import settings
 
-logger = logging.getLogger(__name__)
+logger = logging.getLogger('spicy')
 
 
 def async_retry(async_function):

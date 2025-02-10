@@ -5,7 +5,7 @@ from spicy_api import settings
 from spicy_api.auth.exceptions import SpicyUserIsNotActivated
 from spicy_api.contrib.repeats import async_retry
 
-logger = logging.getLogger(__name__)
+logger = logging.getLogger('spicy')
 
 class SpicyAuth:
     @staticmethod
@@ -42,7 +42,7 @@ class SpicyUser:
 
     def __getattr__(self, attr: str):
         if attr == 'bearer' or attr == 'refresh_token':
-            raise SpicyUserIsNotActivated(f'{self} hasn\'t bearer. To get it, please, activate your SpicyUser: "await SpicyUser().activate(refresh_token=YOUR_REFRESH_TOKEN)"')
+            raise SpicyUserIsNotActivated(f'{self} hasn\'t bearer and refresh_token. To get it, please, activate your SpicyUser: "await SpicyUser().activate(refresh_token=YOUR_REFRESH_TOKEN)"')
 
 
 
