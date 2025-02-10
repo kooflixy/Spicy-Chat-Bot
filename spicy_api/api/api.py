@@ -1,6 +1,6 @@
 import logging
+from spicy_api import settings
 from spicy_api.api.base import BaseSpicyAPI
-from spicy_api.auth.exceptions import SpicyUserIsNotActivated
 from spicy_api.auth.user import SpicyUser
 
 logger = logging.getLogger('spicy')
@@ -14,7 +14,7 @@ class SpicyAPI(BaseSpicyAPI):
 
         self._check_logs_and_do(logger.info(f'The message has been sent to {char_id=}, {conv_id=}'))
         data = await self._get_response(
-            url = "https://chat.nd-api.com/chat",
+            url = settings.SPICY_SEND_MESSAGE_URL,
             payload = self._create_payload(message=message, character_id=char_id, conversation_id=conv_id),
             headers = self.headers
         )

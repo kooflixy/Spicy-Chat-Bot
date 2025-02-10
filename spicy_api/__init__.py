@@ -1,1 +1,1 @@
-from spicy_api import auth
+from spicy_api import auth, api
