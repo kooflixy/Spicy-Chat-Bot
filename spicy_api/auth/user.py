@@ -47,12 +47,14 @@ class SpicyUser:
 
 
     async def _get_tokens(self, refresh_token: str):
+        '''Gets Bearer and refresh_token'''
         data = await SpicyAuth.get_bearer_n_refresh(refresh_token)
         self.bearer: str = data['access_token']
         self.refresh_token: str = data['refresh_token']
 
 
     async def activate(self, refresh_token: str):
+        '''Activates the user by receiving a Bearer and updating the refresh_token if necessary.'''
         await self._get_tokens(refresh_token)
 
         self._is_activated = True
@@ -60,6 +62,7 @@ class SpicyUser:
     
     
     async def update_bearer(self):
+        '''Updates the Bearer and updates the refresh_token if necessary.'''
         await self._get_tokens(self.refresh_token)
 
         logger.info("Bearer and refresh token were updated")

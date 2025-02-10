@@ -1,1 +1,1 @@
-from spicy_api.api.api import *
+from spicy_api.api.api import SpicyAPI
