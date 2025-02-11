@@ -26,6 +26,23 @@ class SpicyAuth:
             logger.info("Bearer and refresh token were got")
             return data
 
+class SpicyUserProfile:
+    @staticmethod
+    @async_retry
+    async def get_profile(bearer: str) -> dict:
+        headers = {
+                    "Authorization": f"Bearer {bearer}",
+                }
+        
+        async with aiohttp.ClientSession() as session:
+            response = await session.get(
+                url = settings.SPICY_USER_DETAILS_URL,
+                headers = headers,
+            )
+            data = await response.json()
+            logger.info('Profile info was got')
+            return data
+
 
 
 
@@ -44,6 +61,10 @@ class SpicyUser:
         if attr == 'bearer' or attr == 'refresh_token':
             raise SpicyUserIsNotActivated(f'{self} hasn\'t bearer and refresh_token. To get it, please, activate your SpicyUser: "await SpicyUser().activate(refresh_token=YOUR_REFRESH_TOKEN)"')
 
+    def __str__(self):
+        if self._is_activated:
+            return f'SpicyUser({self.username})'
+        return 'SpicyUser'
 
 
     async def _get_tokens(self, refresh_token: str):
@@ -51,18 +72,27 @@ class SpicyUser:
         data = await SpicyAuth.get_bearer_n_refresh(refresh_token)
         self.bearer: str = data['access_token']
         self.refresh_token: str = data['refresh_token']
+    
+    async def _get_profile(self):
+        '''Gets user info'''
+        profile_info = await SpicyUserProfile.get_profile(self.bearer)
+        profile_info = profile_info['user']
+        self.name: str = profile_info['name']
+        self.username: str = profile_info['username']
+
 
 
     async def activate(self, refresh_token: str):
-        '''Activates the user by receiving a Bearer and updating the refresh_token if necessary.'''
+        '''Activates the user by receiving a Bearer and updating the refresh_token if necessary. Gets user profile.'''
         await self._get_tokens(refresh_token)
-
+        await self._get_profile()
+        
         self._is_activated = True
-        logger.info('SpicyUser was activated')
+        logger.info(f'{self} was activated')
     
     
     async def update_bearer(self):
         '''Updates the Bearer and updates the refresh_token if necessary.'''
         await self._get_tokens(self.refresh_token)
 
-        logger.info("Bearer and refresh token were updated")
+        logger.info(f"{self}: Bearer and refresh token were updated")
