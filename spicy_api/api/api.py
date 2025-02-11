@@ -23,3 +23,20 @@ class SpicyAPI(BaseSpicyAPI):
 
         self._check_logs_and_do(logger.info(f'The message was successfully responded to {char_id=}, {conv_id=}'))
         return bot_msg
+    
+    async def create_chat(self, message: str, char_id: str) -> tuple[str, str]:
+        '''Returns tuple[bot_msg:str, new_conv_id: str] 
+        Sends user's message to new SpicyChat Bot's conversation and returns its answer and id of new conversation'''
+
+        self._check_logs_and_do(logger.info(f'Trying to send a message and create a new conversation {char_id=}'))
+        data = await self._get_response(
+            url = settings.SPICY_SEND_MESSAGE_URL,
+            payload = self._create_payload(message=message, character_id=char_id),
+            headers = self.headers
+        )
+
+        bot_msg: str = data['message']['content']
+        new_conv_id: str = data['message']['conversation_id']
+
+        self._check_logs_and_do(logger.info(f'The message was sent successfully and the conversation was successfully created. {char_id=}, {new_conv_id=}'))
+        return bot_msg, new_conv_id
