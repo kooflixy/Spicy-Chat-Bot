@@ -19,6 +19,7 @@ class BaseSpicyAPI:
     class RequestType:
         GET = 'get'
         POST = 'post'
+        DELETE = 'delete'
 
     def _create_payload(self, **kwargs):
         return kwargs
@@ -57,6 +58,8 @@ class BaseSpicyAPI:
                 response = await session.post(url, headers=headers, json=payload)
             elif request_type == self.RequestType.GET:
                 response = await session.get(url, headers=headers, json=payload)
+            elif request_type == self.RequestType.DELETE:
+                response = await session.delete(url, headers=headers, json=payload)
                 
             data = await response.json()
             if response.status != 200:

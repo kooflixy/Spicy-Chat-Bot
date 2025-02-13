@@ -7,6 +7,7 @@ SPICY_USER_AUTH_URL = 'https://gamma.kinde.com/oauth2/token'
 SPICY_USER_DETAILS_URL = 'https://4mpanjbsf6.execute-api.us-east-1.amazonaws.com/v2/users'
 
 SPICY_GET_CONVERSATIONS_URL = 'https://4mpanjbsf6.execute-api.us-east-1.amazonaws.com/v2/characters/{char_id}/conversations'
+SPICY_DELETE_CONVERSATION_URL = 'https://4mpanjbsf6.execute-api.us-east-1.amazonaws.com/conversations/{conv_id}'
 SPICY_SEND_MESSAGE_URL = 'https://chat.nd-api.com/chat'
 
 # Bot settings

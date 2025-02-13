@@ -16,7 +16,7 @@ class SpicyAPI(BaseSpicyAPI):
 
         self._check_logs_and_do(logger.info(f'Started trying to get conversations {char_id=}'))
         data = await self._get_response(
-            request_type=self.RequestType.GET,
+            request_type = self.RequestType.GET,
             url = settings.SPICY_GET_CONVERSATIONS_URL.format(char_id = char_id),
             headers = self.headers,
         )
@@ -25,22 +25,20 @@ class SpicyAPI(BaseSpicyAPI):
         self._check_logs_and_do(logger.info(f'Conversations were successfully received {char_id=}'))
         return data
     
-    async def send_message(self, message: str, char_id: str, conv_id: str) -> str:
-        '''Sends user's message to SpicyChat Bot and return its response'''
-
-        self._check_logs_and_do(logger.info(f'The message has been sent to {char_id=}, {conv_id=}'))
+    async def delete_conversation(self, conv_id: str) -> dict:
+        '''Deletes the specified conversation'''
+        
+        self._check_logs_and_do(logger.info(f'Started trying to delete conversation {conv_id=}'))
         data = await self._get_response(
-            url = settings.SPICY_SEND_MESSAGE_URL,
-            payload = self._create_payload(message=message, character_id=char_id, conversation_id=conv_id),
-            headers = self.headers
+            request_type=self.RequestType.DELETE,
+            url = settings.SPICY_DELETE_CONVERSATION_URL.format(conv_id=conv_id),
+            headers=self.headers,
         )
+        
+        self._check_logs_and_do(logger.info(f'Conversations was successfully deleted {conv_id=}'))
+        return data
 
-        bot_msg = data["message"]["content"]
-
-        self._check_logs_and_do(logger.info(f'The message was successfully responded to {char_id=}, {conv_id=}'))
-        return bot_msg
-    
-    async def create_chat(self, message: str, char_id: str) -> tuple[str, str]:
+    async def create_conversation(self, message: str, char_id: str) -> tuple[str, str]:
         '''Returns tuple[bot_msg:str, new_conv_id: str] 
         Sends user's message to new SpicyChat Bot's conversation and returns its answer and id of new conversation'''
 
@@ -56,3 +54,18 @@ class SpicyAPI(BaseSpicyAPI):
 
         self._check_logs_and_do(logger.info(f'The message was sent successfully and the conversation was successfully created. {char_id=}, {new_conv_id=}'))
         return bot_msg, new_conv_id
+    
+    async def send_message(self, message: str, char_id: str, conv_id: str) -> str:
+        '''Sends user's message to SpicyChat Bot and return its response'''
+
+        self._check_logs_and_do(logger.info(f'The message has been sent to {char_id=}, {conv_id=}'))
+        data = await self._get_response(
+            url = settings.SPICY_SEND_MESSAGE_URL,
+            payload = self._create_payload(message=message, character_id=char_id, conversation_id=conv_id),
+            headers = self.headers
+        )
+
+        bot_msg = data["message"]["content"]
+
+        self._check_logs_and_do(logger.info(f'The message was successfully responded to {char_id=}, {conv_id=}'))
+        return bot_msg
