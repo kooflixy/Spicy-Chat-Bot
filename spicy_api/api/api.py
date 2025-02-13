@@ -2,6 +2,7 @@ import logging
 from spicy_api import settings
 from spicy_api.api.base import BaseSpicyAPI
 from spicy_api.auth.user import SpicyUser
+from spicy_api.auth import convs
 
 logger = logging.getLogger('spicy')
 
@@ -9,8 +10,23 @@ class SpicyAPI(BaseSpicyAPI):
     def __init__(self, user: SpicyUser, logs = True):
         super().__init__(user, logs)
 
+    
+    async def get_convesations(self, char_id: str) -> list[convs.SpicyConv]:
+        '''Gets a list of all conversations with the bot.'''
+
+        self._check_logs_and_do(logger.info(f'Started trying to get conversations {char_id=}'))
+        data = await self._get_response(
+            request_type=self.RequestType.GET,
+            url = settings.SPICY_GET_CONVERSATIONS_URL.format(char_id = char_id),
+            headers = self.headers,
+        )
+        data = convs.dict_to_SpicyConv(data)
+
+        self._check_logs_and_do(logger.info(f'Conversations were successfully received {char_id=}'))
+        return data
+    
     async def send_message(self, message: str, char_id: str, conv_id: str) -> str:
-        """Sends user's message to SpicyChat Bot and return its response"""
+        '''Sends user's message to SpicyChat Bot and return its response'''
 
         self._check_logs_and_do(logger.info(f'The message has been sent to {char_id=}, {conv_id=}'))
         data = await self._get_response(

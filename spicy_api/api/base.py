@@ -16,6 +16,10 @@ class BaseSpicyAPI:
                     "Authorization": f"Bearer {user.bearer}",
                 }
 
+    class RequestType:
+        GET = 'get'
+        POST = 'post'
+
     def _create_payload(self, **kwargs):
         return kwargs
     
@@ -36,7 +40,7 @@ class BaseSpicyAPI:
                 return await function(*args, **kwargs)
             except:
                 self: BaseSpicyAPI = args[0]
-                self.user.update_bearer()
+                await self.user.update_bearer()
                 self.headers = {
                     "Authorization": f"Bearer {self.user.bearer}",
                 }
@@ -46,9 +50,14 @@ class BaseSpicyAPI:
         return wrapped
 
     @_bearer_observer
-    async def _get_response(self, url: str, payload: dict, headers: dict) -> dict:
+    async def _get_response(self, url: str, headers: dict, payload: dict = {}, request_type: RequestType = RequestType.POST) -> dict:
         async with aiohttp.ClientSession() as session:
-            response = await session.post(url, headers=headers, json=payload)
+
+            if request_type == self.RequestType.POST:
+                response = await session.post(url, headers=headers, json=payload)
+            elif request_type == self.RequestType.GET:
+                response = await session.get(url, headers=headers, json=payload)
+                
             data = await response.json()
             if response.status != 200:
                 raise Exception('NADO OBNOVIT BEARER')
