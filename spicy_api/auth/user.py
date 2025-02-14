@@ -10,9 +10,10 @@ logger = logging.getLogger('spicy')
 class SpicyAuth:
     @staticmethod
     @async_retry
-    async def get_bearer_n_refresh(refresh_token: str) -> dict:
+    async def get_bearer_n_refresh(refresh_token: str, client_id: str) -> dict:
         async with aiohttp.ClientSession() as session:
             payload = {
+                'client_id': client_id,
                 "grant_type": "refresh_token",
                 "refresh_token": refresh_token,
             }
@@ -67,9 +68,10 @@ class SpicyUser:
         return 'SpicyUser'
 
 
-    async def _get_tokens(self, refresh_token: str):
+    async def _get_tokens(self, refresh_token: str, client_id: str):
         '''Gets Bearer and refresh_token'''
-        data = await SpicyAuth.get_bearer_n_refresh(refresh_token)
+        data = await SpicyAuth.get_bearer_n_refresh(refresh_token, client_id)
+        self.client_id: str = client_id
         self.bearer: str = data['access_token']
         self.refresh_token: str = data['refresh_token']
     
@@ -82,9 +84,9 @@ class SpicyUser:
 
 
 
-    async def activate(self, refresh_token: str):
+    async def activate(self, refresh_token: str, client_id: str):
         '''Activates the user by receiving a Bearer and updating the refresh_token if necessary. Gets user profile.'''
-        await self._get_tokens(refresh_token)
+        await self._get_tokens(refresh_token, client_id)
         await self._get_profile()
         
         self._is_activated = True
@@ -93,6 +95,6 @@ class SpicyUser:
     
     async def update_bearer(self):
         '''Updates the Bearer and updates the refresh_token if necessary.'''
-        await self._get_tokens(self.refresh_token)
+        await self._get_tokens(self.refresh_token, self.client_id)
 
         logger.info(f"{self}: Bearer and refresh token were updated")
