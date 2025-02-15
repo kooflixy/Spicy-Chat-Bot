@@ -2,7 +2,7 @@ import logging
 from spicy_api import settings
 from spicy_api.api.base import BaseSpicyAPI
 from spicy_api.auth.user import SpicyUser
-from spicy_api.auth import convs
+from spicy_api.api.classes import convs, bot_profile
 
 logger = logging.getLogger('spicy')
 
@@ -69,3 +69,17 @@ class SpicyAPI(BaseSpicyAPI):
 
         self._check_logs_and_do(logger.info(f'The message was successfully responded to {char_id=}, {conv_id=}'))
         return bot_msg
+    
+    async def get_bot_profile(self, char_id: str):
+        '''Gets information about the bot's profile'''
+        
+        self._check_logs_and_do(logger.info(f'Starting an attempt to get the bot\'s profile {char_id=}'))
+        data = await self._get_response(
+            request_type=self.RequestType.GET,
+            url = settings.SPICY_GET_BOT_PROFILE_URL.format(char_id = char_id),
+            headers=self.headers,
+        )
+        bot = bot_profile.SpicyBotProfile(**data)
+
+        self._check_logs_and_do(logger.info(f'The bot profile was successfully received {char_id=}'))
+        return bot
