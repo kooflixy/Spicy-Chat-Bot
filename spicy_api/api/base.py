@@ -52,6 +52,8 @@ class BaseSpicyAPI:
 
     @_bearer_observer
     async def _get_response(self, url: str, headers: dict, payload: dict = {}, request_type: RequestType = RequestType.POST) -> dict:
+        '''Receives a response using aiohttp. Designed to avoid writing the same action over and over again.'''
+        
         async with aiohttp.ClientSession() as session:
 
             if request_type == self.RequestType.POST:
