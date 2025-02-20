@@ -3,6 +3,7 @@ import aiohttp
 
 from spicy_api import settings
 from spicy_api.auth.exceptions import SpicyUserIsNotActivated
+from spicy_api.contrib.for_logging import do_log
 from spicy_api.contrib.repeats import async_retry
 
 logger = logging.getLogger('spicy')
@@ -55,6 +56,8 @@ class SpicyUser:
         user = SpicyUser()
         await user.activate(refresh_token=YOUR_REFRESH_TOKEN)
     '''
+    def __init__(self, logs: bool = True):
+        self._logs = logs
 
     _is_activated = False
 
@@ -67,7 +70,7 @@ class SpicyUser:
             return f'SpicyUser({self.username})'
         return 'SpicyUser'
 
-
+    @do_log
     async def _get_tokens(self, refresh_token: str, client_id: str):
         '''Gets Bearer and refresh_token'''
         data = await SpicyAuth.get_bearer_n_refresh(refresh_token, client_id)
@@ -75,6 +78,7 @@ class SpicyUser:
         self.bearer: str = data['access_token']
         self.refresh_token: str = data['refresh_token']
     
+    @do_log
     async def _get_profile(self):
         '''Gets user info'''
         profile_info = await SpicyUserProfile.get_profile(self.bearer)
@@ -83,16 +87,15 @@ class SpicyUser:
         self.username: str = profile_info['username']
 
 
-
+    @do_log
     async def activate(self, refresh_token: str, client_id: str):
         '''Activates the user by receiving a Bearer and updating the refresh_token if necessary. Gets user profile.'''
         await self._get_tokens(refresh_token, client_id)
         await self._get_profile()
         
         self._is_activated = True
-        logger.info(f'{self} was activated')
     
-    
+    @do_log
     async def update_bearer(self):
         '''Updates the Bearer and updates the refresh_token if necessary.'''
         await self._get_tokens(self.refresh_token, self.client_id)
