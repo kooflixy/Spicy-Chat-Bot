@@ -24,7 +24,7 @@ class SpicyAuth:
             )
 
             data = await response.json()
-            logger.info("Bearer and refresh token were got")
+            # logger.info("Bearer and refresh token were got")
             return data
 
 class SpicyUserProfile:
@@ -41,7 +41,7 @@ class SpicyUserProfile:
                 headers = headers,
             )
             data = await response.json()
-            logger.info('Profile info was got')
+            # logger.info('Profile info was got')
             return data
 
 
