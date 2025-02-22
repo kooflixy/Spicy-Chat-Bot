@@ -67,8 +67,8 @@ class SpicyUser:
 
     def __str__(self):
         if self._is_activated:
-            return f'SpicyUser({self.username})'
-        return 'SpicyUser'
+            return f'<{self.__class__.__name__} "{self.username}">'
+        return f'<{self.__class__.__name__}>'
 
     @do_log
     async def _get_tokens(self, refresh_token: str, client_id: str):

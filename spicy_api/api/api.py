@@ -11,6 +11,8 @@ class SpicyAPI(BaseSpicyAPI):
     def __init__(self, user: SpicyUser, logs = True):
         super().__init__(user, logs)
 
+    def __repr__(self):
+        return f'<{self.__class__.__name__} {self.user.username}>'
     
     @do_log
     async def get_convesations(self, char_id: str) -> list[convs.SpicyConv]:
