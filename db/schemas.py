@@ -11,3 +11,12 @@ class UsersAddDTO(BaseModel):
 class UsersDTO(UsersAddDTO):
     created_at: datetime.datetime
     updated_at: datetime.datetime
+
+
+class SpicyUsersRefreshTokensAddDTO(BaseModel):
+    id: str
+    refresh_token: str
+
+class SpicyUsersRefreshTokensDTO(SpicyUsersRefreshTokensAddDTO):
+    created_at: datetime.datetime
+    updated_at: datetime.datetime

@@ -4,7 +4,7 @@ from sqlalchemy import String, text
 from sqlalchemy.orm import Mapped, mapped_column
 
 import config
-from db.schemas import UsersDTO
+from db.schemas import UsersDTO, SpicyUsersRefreshTokensDTO
 from db.database import Base
 
 intpk = Annotated[int, mapped_column(primary_key=True)]
@@ -30,4 +30,25 @@ class UsersORM(Base):
     dto_schema = UsersDTO
 
     def as_dto(self) -> UsersDTO:
+        return super().as_dto()
+
+
+class SpicyUsersRefreshTokensORM(Base):
+    '''С этой моделью предполагается такая работа:
+    Запуск программы -> активация SpicyUser(или дочерних ему классов) -> в методе активации сначала из базы извлекается refresh token и далее передается на активацию
+    Истечение срока refresh token`а -> получение нового -> запись нового токена в бд
+    В теории, т.к. программа будет запускаться один раз и срок токена будет истекать раз в день, последовательность выше будет исполняться ОЧЕНЬ редко
+    '''
+    __tablename__ = 'spicy_users_refresh_tokens'
+
+    id: Mapped[str] = mapped_column(primary_key=True)
+    refresh_token: Mapped[str]
+    created_at: Mapped[created_attp]
+    updated_at: Mapped[updated_attp]
+    
+    repr_cols_num = 2
+
+    dto_schema = SpicyUsersRefreshTokensDTO
+
+    def as_dto(self) -> SpicyUsersRefreshTokensDTO:
         return super().as_dto()
