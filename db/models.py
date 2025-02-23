@@ -4,6 +4,7 @@ from sqlalchemy import String, text
 from sqlalchemy.orm import Mapped, mapped_column
 
 import config
+from db.schemas import UsersDTO
 from db.database import Base
 
 intpk = Annotated[int, mapped_column(primary_key=True)]
@@ -23,3 +24,10 @@ class UsersORM(Base):
     conv_id: Mapped[str]
     created_at: Mapped[created_attp]
     updated_at: Mapped[updated_attp]
+
+    repr_cols_num = 2
+
+    dto_schema = UsersDTO
+
+    def as_dto(self) -> UsersDTO:
+        return super().as_dto()
