@@ -43,6 +43,7 @@ class SpicyUsersRefreshTokensORM(Base):
 
     id: Mapped[str] = mapped_column(primary_key=True)
     refresh_token: Mapped[str]
+    client_id: Mapped[str]
     created_at: Mapped[created_attp]
     updated_at: Mapped[updated_attp]
     

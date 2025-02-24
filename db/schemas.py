@@ -15,6 +15,7 @@ class UsersDTO(UsersAddDTO):
 
 class SpicyUsersRefreshTokensAddDTO(BaseModel):
     id: str
+    client_id: str
     refresh_token: str
 
 class SpicyUsersRefreshTokensDTO(SpicyUsersRefreshTokensAddDTO):

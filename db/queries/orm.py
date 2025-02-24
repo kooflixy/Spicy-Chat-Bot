@@ -42,9 +42,10 @@ class AsyncORM:
             await session.commit()
     
     @staticmethod
-    async def insert_refresh_token(spicy_user_id: str, refresh_token: str) -> None:
+    async def insert_refresh_token(spicy_user_id: str, client_id: str, refresh_token: str) -> None:
         spicy_user_refresh_token = SpicyUsersRefreshTokensORM(
             id = spicy_user_id,
+            client_id = client_id,
             refresh_token = refresh_token
         )
         async with async_session_factory() as session:
