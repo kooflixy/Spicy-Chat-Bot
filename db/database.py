@@ -7,7 +7,8 @@ import config
 database_url_asyncpg = f'postgresql+asyncpg://{config.DB_USER}:{config.DB_PASS}@{config.DB_HOST}:{config.DB_PORT}/{config.DB_NAME}'
 
 async_engine = create_async_engine(
-    url = database_url_asyncpg
+    url = database_url_asyncpg,
+    echo = config.DB_ECHO
 )
 
 async_session_factory = async_sessionmaker(async_engine)
@@ -30,4 +31,4 @@ class Base(DeclarativeBase):
 
     def as_dto(self):
         '''Converts ORM class to its DTO schema'''
-        return self.dto_schema.model_validate(self.dto_schema, from_attributes=True)
+        return self.dto_schema.model_validate(self, from_attributes=True)

@@ -25,7 +25,7 @@ class AsyncORM:
     async def get_user(user_id: int) -> UsersORM:
         async with async_session_factory() as session:
             user = await session.get(UsersORM, user_id)
-            return user
+        return user
     
     #spicy user refresh token interactions
     @staticmethod
