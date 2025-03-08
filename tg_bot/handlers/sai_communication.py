@@ -1,20 +1,21 @@
 from aiogram import Router
 from aiogram.types import Message
-from aiogram.filters import CommandStart
-from click import Command
+from aiogram.filters import CommandStart, Command
 
 from db.database import async_session_factory
 from db.queries.orm import AsyncORM
 from db.models import UsersORM
+
 from tg_bot.handlers.sai_accs_setts import spicy_api
 
 import config
 
 router = Router()
 
+
 @router.message(CommandStart())
 async def start(message: Message):
-    from tg_bot.handlers.sai_accs_setts import spicy_api
+    '''Creates a new conversation if the user is not registered'''
 
     user = await AsyncORM.get_user(message.chat.id)
 
@@ -22,7 +23,7 @@ async def start(message: Message):
         user = await session.get(UsersORM, message.chat.id)
 
         if user:
-            # await message.answer('Вы уже смешарик')
+            await message.answer('Вы уже смешарик')
             return
         
         bot_message, new_conv_id = await spicy_api.create_conversation('Привет!', config.SPICY_DEFAULT_AI_BOT_ID)
