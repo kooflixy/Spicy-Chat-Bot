@@ -33,8 +33,6 @@ async def sapiaccstart(message: Message):
 async def start(message: Message):
     '''Creates a new conversation if the user is not registered'''
 
-    user = await AsyncORM.get_user(message.chat.id)
-
     async with async_session_factory() as session:
         user = await session.get(UsersORM, message.chat.id)
 
@@ -57,3 +55,21 @@ async def start(message: Message):
         await message.answer(bot_message)
 
         logger.info(f'{start.__name__} is handled {UserForLogs.log_name(message)}: {new_conv_id=}')
+
+
+@router.message()
+async def talk_with_sai_bot(message: Message):
+    async with async_session_factory() as session:
+        user = await session.get(UsersORM, message.chat.id)
+        user = user.as_dto()
+
+        if message.chat.type == 'private':
+            bot_message = await spicy_api.send_message(message=message.text, char_id=user.char_id, conv_id=user.conv_id)
+
+            await message.answer(bot_message)
+        else:
+            bot_message = await spicy_api.send_message(message=message.text, char_id=user.char_id, conv_id=user.conv_id)
+
+            await message.reply(bot_message)
+        
+        logger.info(f'{talk_with_sai_bot.__name__} is handled {UserForLogs.log_name(message)}')

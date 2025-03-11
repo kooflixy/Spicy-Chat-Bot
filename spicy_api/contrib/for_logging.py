@@ -11,7 +11,6 @@ def do_log(func):
             if 'message' in kwargs:
                 lkwargs['message'] = lkwargs['message'][:50]
             start_time = time.time()
-            logger.info(f'{self.__class__.__name__}.{func.__name__} started args: {lkwargs}')
 
         res = await func(*args, **kwargs)
         
