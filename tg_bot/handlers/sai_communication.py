@@ -27,7 +27,7 @@ async def sapiaccstart(message: Message):
     spicy_api = SpicyAPI(spicy_user)
 
     await message.answer('SpicyAPI activated')
-    logger.info(f'{sapiaccstart.__name__} is handled: activated {spicy_api=}, {spicy_user=}')
+    logger.info(f'{sapiaccstart.__name__} is handled {UserForLogs.log_name(message)}: activated {spicy_api=}, {spicy_user=}')
 
 @router.message(CommandStart())
 async def start(message: Message):
