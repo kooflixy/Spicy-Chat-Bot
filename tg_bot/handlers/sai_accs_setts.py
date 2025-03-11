@@ -15,7 +15,10 @@ router = Router()
 spicy_api: SpicyAPI = None
 
 @router.message(Command('sapiaccstart'))
+
 async def botstart(message: Message):
+    '''Outdated
+    Currently used tg_bot.handlers.sai_communication.sapiaccstart'''
     global spicy_api, spicy_user
 
     spicy_user = SpecialSpicyUser()
