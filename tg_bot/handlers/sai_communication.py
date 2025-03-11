@@ -6,12 +6,28 @@ from db.database import async_session_factory
 from db.queries.orm import AsyncORM
 from db.models import UsersORM
 
-from tg_bot.handlers.sai_accs_setts import spicy_api
+from core.spicy.classes.special_spicy_user import SpecialSpicyUser
+from spicy_api.api.api import SpicyAPI
+# from tg_bot.handlers.sai_accs_setts import spicy_api
+from tg_bot.contrib.func_logger import UserForLogs
 
 import config
+from logging import getLogger
 
+logger = getLogger(__name__)
 router = Router()
 
+
+@router.message(Command('sapiaccstart'))
+async def sapiaccstart(message: Message):
+    global spicy_api, spicy_user
+
+    spicy_user = SpecialSpicyUser()
+    await spicy_user.activate(config.SPICY_ACTIVE_USER_ID)
+    spicy_api = SpicyAPI(spicy_user)
+
+    await message.answer('SpicyAPI activated')
+    logger.info(f'{sapiaccstart.__name__} is handled: activated {spicy_api=}, {spicy_user=}')
 
 @router.message(CommandStart())
 async def start(message: Message):
@@ -24,6 +40,7 @@ async def start(message: Message):
 
         if user:
             await message.answer('Вы уже смешарик')
+            logger.info(f'{start.__name__} is handled: user is already registered {UserForLogs.log_name(message)}')
             return
         
         bot_message, new_conv_id = await spicy_api.create_conversation('Привет!', config.SPICY_DEFAULT_AI_BOT_ID)
@@ -38,3 +55,5 @@ async def start(message: Message):
         await session.commit()
 
         await message.answer(bot_message)
+
+        logger.info(f'{start.__name__} is handled {UserForLogs.log_name(message)}: {new_conv_id=}')

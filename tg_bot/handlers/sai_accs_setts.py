@@ -2,11 +2,14 @@ from aiogram import Router
 from aiogram.types import Message
 from aiogram.filters import Command
 
+from logging import getLogger
+
 from spicy_api.api import SpicyAPI
 from core.spicy.classes.special_spicy_user import SpecialSpicyUser
 
 import config
 
+logger = getLogger(__name__)
 router = Router()
 
 spicy_api: SpicyAPI = None

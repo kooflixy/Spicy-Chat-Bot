@@ -8,7 +8,7 @@ async def main():
     bot = Bot(config.TG_BOT_API_TOKEN, default=DefaultBotProperties(parse_mode=ParseMode.HTML))
     dp = Dispatcher()
     dp.include_routers(
-        sai_accs_setts.router,
+        # sai_accs_setts.router,
         sai_communication.router
     )
     await bot.delete_webhook(drop_pending_updates=True)

@@ -13,7 +13,7 @@ class UserForLogs:
         if msg.chat.type != 'private':
             info_list.append(f'{msg.chat.type}_name={msg.chat.title}')
             info_list.append(f'{msg.chat.type}_id={msg.chat.id}')
-        return f'<TgUser {','.join(info_list)}>'
+        return f'<TgUser {', '.join(info_list)}>'
 
 # def msg_func_logger(logger):
 def msg_func_logger(function):
@@ -23,7 +23,7 @@ def msg_func_logger(function):
         res = await function(*args, **kwargs)
         
         busy_time = time.time() - start_time
-        logger.info(f'{function.__name__} completed in {busy_time} s for {UserForLogs.log_name(args[0])}')
+        logger.info(f'{function.__name__} completed in {busy_time} s for ')
         return res
     return wrapped
     # return log
