@@ -20,6 +20,7 @@ router = Router()
 
 @router.message(Command('sapiaccstart'))
 async def sapiaccstart(message: Message):
+    '''Activates SpicyAPI in this file'''
     global spicy_api, spicy_user
 
     spicy_user = SpecialSpicyUser()
@@ -28,6 +29,7 @@ async def sapiaccstart(message: Message):
 
     await message.answer('SpicyAPI activated')
     logger.info(f'{sapiaccstart.__name__} is handled {UserForLogs.log_name(message)}: activated {spicy_api=}, {spicy_user=}')
+
 
 @router.message(CommandStart())
 async def start(message: Message):
@@ -59,6 +61,7 @@ async def start(message: Message):
 
 @router.message(Command('setbot'))
 async def setbot(message: Message, command: CommandObject):
+    '''Changes user's sai_bot'''
     async with async_session_factory() as session:
         user = await session.get(UsersORM, message.chat.id)
 
@@ -75,12 +78,29 @@ async def setbot(message: Message, command: CommandObject):
         
         bot_message, new_conv_id = response
 
-        user.char_id = new_conv_id
+        user.conv_id = new_conv_id
+        user.char_id = command.args
         await session.commit()
 
         await message.answer('<b>Бот успешно изменён.</b>\n' + bot_message)
 
         logger.info(f'{setbot.__name__} is handled {UserForLogs.log_name(message)}: char_id={command.args}, {new_conv_id}')
+
+@router.message(Command('reset_chat'))
+async def reset_chat(message: Message):
+    '''Resets user's conv with bot'''
+    async with async_session_factory() as session:
+        user = await session.get(UsersORM, message.chat.id)
+        user_char_id = user.char_id
+        
+        bot_message, new_conv_id = await spicy_api.create_conversation('Привет!', user_char_id)
+
+        user.conv_id = new_conv_id
+        await session.commit()
+        
+        await message.answer('<b>Чат успешно обновлён.</b>\n' + bot_message)
+
+        logger.info(f'{reset_chat.__name__} is handled {UserForLogs.log_name(message)}: char_id={user_char_id}, {new_conv_id}')
 
 
 @router.message()
