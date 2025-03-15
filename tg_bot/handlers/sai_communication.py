@@ -48,6 +48,7 @@ async def start(message: Message):
         user = UsersORM(
             id = message.chat.id,
             username = message.chat.full_name,
+            char_id = config.SPICY_DEFAULT_AI_BOT_ID,
             conv_id = new_conv_id
         )
 

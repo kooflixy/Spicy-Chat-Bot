@@ -20,7 +20,7 @@ class UsersORM(Base):
 
     id: Mapped[int] = mapped_column(BigInteger, primary_key=True)
     username: Mapped[str | None] = mapped_column(String(100))
-    char_id: Mapped[str] = mapped_column(default=config.SPICY_DEFAULT_AI_BOT_ID)
+    char_id: Mapped[str]
     conv_id: Mapped[str]
     created_at: Mapped[created_attp]
     updated_at: Mapped[updated_attp]
