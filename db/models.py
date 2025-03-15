@@ -7,7 +7,7 @@ import config
 from db.schemas import UsersDTO, SpicyUsersRefreshTokensDTO
 from db.database import Base
 
-intpk = Annotated[BigInteger, mapped_column(primary_key=True)]
+intpk = Annotated[int, mapped_column(primary_key=True)]
 created_attp = Annotated[datetime.datetime, mapped_column(server_default=text("TIMEZONE('utc', now())"))]
 updated_attp = Annotated[datetime.datetime, mapped_column(
         server_default=text("TIMEZONE('utc', now())"),
