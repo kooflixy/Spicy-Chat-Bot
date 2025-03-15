@@ -13,3 +13,11 @@ class SpecialSpicyAPI(SpicyAPI):
         resp = await super().create_conversation(message, char_id)
         msg = resp[0].replace(self.user.name, username)
         return msg, resp[1]
+    
+    async def get_bot_profile(self, char_id, username: str):
+        bot =  await super().get_bot_profile(char_id)
+
+        bot.greeting = bot.greeting.replace('{{char}}', bot.name).replace('{{user}}', username)
+        bot.title = bot.title.replace('{{char}}', bot.name).replace('{{user}}', username)
+
+        return bot

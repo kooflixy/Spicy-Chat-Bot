@@ -80,10 +80,14 @@ class SpicyAPI(BaseSpicyAPI):
             url = settings.SPICY_GET_BOT_PROFILE_URL.format(char_id = char_id),
             headers=self.headers,
         )
+
+        if not data:
+            return
         if data == 403:
             return
         
-        data['avatar_url'] = 'https://ndsc.b-cdn.net/' + data['avatar_url']
         bot = bot_profile.SpicyBotProfile(**data)
+
+        bot.avatar_url = 'https://ndsc.b-cdn.net/' + bot.avatar_url
 
         return bot

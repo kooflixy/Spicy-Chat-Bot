@@ -9,6 +9,7 @@ from core.spicy.classes.special_spicy_user import SpecialSpicyUser
 from core.spicy.classes.special_spicy_api import SpecialSpicyAPI
 # from spicy_api.api.api import SpicyAPI
 from tg_bot.contrib.func_logger import UserForLogs
+from tg_bot.contrib.generator import get_random_smile, generate_sai_bot_desc
 from tg_bot.keyboards import inline
 
 import config
@@ -65,15 +66,11 @@ async def bot_profile(message: Message):
     async with async_session_factory() as session:
         user = await session.get(UsersORM, message.chat.id)
         
-        bot_profile = await spicy_api.get_bot_profile(user.char_id)
+        bot_profile = await spicy_api.get_bot_profile(user.char_id, message.from_user.full_name)
 
         await message.reply_photo(
             photo=bot_profile.avatar_url,
-            caption=f'''
-<b>{bot_profile.name}</b>
-{bot_profile.title}
-{', '.join(bot_profile.tags)}
-'''
+            caption=generate_sai_bot_desc(bot_profile)
         )
 
 
@@ -88,7 +85,7 @@ async def setbot(message: Message, command: CommandObject):
             return
         
 
-        bot_profile = await spicy_api.get_bot_profile(command.args)
+        bot_profile = await spicy_api.get_bot_profile(command.args, message.from_user.full_name)
 
         if not bot_profile:
             await message.answer(f'Бота с айди <code>{command.args}</code> не существует')
@@ -97,32 +94,11 @@ async def setbot(message: Message, command: CommandObject):
         
         await message.reply_photo(
             photo=bot_profile.avatar_url,
-            caption=f'''
-<b>{bot_profile.name}</b>
-{bot_profile.title}
-{', '.join(bot_profile.tags)}
-''',
-            reply_markup=inline.start_to_chat_ask_ikb(bot_profile=bot_profile)
+            caption=generate_sai_bot_desc(bot_profile)
         )
-        return
-        response = await spicy_api.create_conversation('Привет!', command.args)
+        await message.answer(text=bot_profile.greeting, reply_markup=inline.start_to_chat_ask_ikb(bot_profile=bot_profile))
 
-        if not response:
-            await message.answer(f'Бота с айди <code>{command.args}</code> не существует')
-            logger.info(f'{setbot.__name__} is handled: bot doesn`t exist {UserForLogs.log_name(message)} char_id={command.args}')
-            return
-        
-        await spicy_api.delete_conversation(user.conv_id)
-
-        bot_message, new_conv_id = response
-
-        user.conv_id = new_conv_id
-        user.char_id = command.args
-        await session.commit()
-
-        await message.answer('<b>Бот успешно изменён.</b>\n' + bot_message)
-
-        logger.info(f'{setbot.__name__} is handled {UserForLogs.log_name(message)}: char_id={command.args}, {new_conv_id}')
+        logger.info(f'{setbot.__name__} is handled: ask to change {UserForLogs.log_name(message)} char_id={command.args}')
 
 
 @router.callback_query(inline.StartToChatAskCD.filter())
@@ -131,7 +107,7 @@ async def start_to_chat_resp(callback: CallbackQuery, callback_data: inline.Star
         user = await session.get(UsersORM, callback.message.chat.id)
 
         bot_message, new_conv_id = await spicy_api.create_conversation('Привет!', callback_data.char_id, callback.message.from_user.full_name)
-
+        
         await spicy_api.delete_conversation(user.conv_id)
 
         user.conv_id = new_conv_id
@@ -140,7 +116,7 @@ async def start_to_chat_resp(callback: CallbackQuery, callback_data: inline.Star
 
         await callback.message.answer(bot_message)
 
-        logger.info(f'{start.__name__} is handled {UserForLogs.log_name(callback.message)}: {new_conv_id=}')
+        logger.info(f'{start_to_chat_resp.__name__} is handled {UserForLogs.log_name(callback.message)}: char_id={callback_data.char_id}, {new_conv_id=}')
 
 
 @router.message(Command('reset_chat'))
