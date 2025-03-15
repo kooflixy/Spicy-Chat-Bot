@@ -2,7 +2,7 @@ from aiogram import Bot, Dispatcher
 from aiogram.client.default import DefaultBotProperties
 from aiogram.enums.parse_mode import ParseMode
 import config
-from tg_bot.handlers import sai_communication, sai_accs_setts
+from tg_bot.handlers import sai_communication
 
 async def main():
     bot = Bot(config.TG_BOT_API_TOKEN, default=DefaultBotProperties(parse_mode=ParseMode.HTML))

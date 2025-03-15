@@ -1,6 +1,6 @@
 from aiogram import Router
 from aiogram.types import Message
-from aiogram.filters import CommandStart, Command
+from aiogram.filters import CommandStart, Command, CommandObject
 
 from db.database import async_session_factory
 from db.queries.orm import AsyncORM
@@ -57,8 +57,36 @@ async def start(message: Message):
         logger.info(f'{start.__name__} is handled {UserForLogs.log_name(message)}: {new_conv_id=}')
 
 
+@router.message(Command('setbot'))
+async def setbot(message: Message, command: CommandObject):
+    async with async_session_factory() as session:
+        user = await session.get(UsersORM, message.chat.id)
+
+        if command.args == user.char_id:
+            await message.answer('У Вас стоит бот с этим айди')
+            return
+        
+        response = await spicy_api.create_conversation('Привет!', command.args)
+
+        if not response:
+            await message.answer(f'Бота с айди <code>{command.args}</code> не существует')
+            logger.info(f'{setbot.__name__} is handled: bot doesn`t exist {UserForLogs.log_name(message)} char_id={command.args}')
+            return
+        
+        bot_message, new_conv_id = response
+
+        user.char_id = new_conv_id
+        await session.commit()
+
+        await message.answer('<b>Бот успешно изменён.</b>\n' + bot_message)
+
+        logger.info(f'{setbot.__name__} is handled {UserForLogs.log_name(message)}: char_id={command.args}, {new_conv_id}')
+
+
 @router.message()
 async def talk_with_sai_bot(message: Message):
+    '''Sends users's message to SpicyChat and gets response message'''
+
     async with async_session_factory() as session:
         user = await session.get(UsersORM, message.chat.id)
         user = user.as_dto()

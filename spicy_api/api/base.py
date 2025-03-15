@@ -64,7 +64,9 @@ class BaseSpicyAPI:
                 response = await session.delete(url, headers=headers, json=payload)
                 
             data = await response.json()
-            if response.status != 200:
-                raise Exception('NADO OBNOVIT BEARER')
-
-            return data
+            if response.status == 200:
+                return data
+                # raise Exception('NADO OBNOVIT BEARER')
+            else:
+                logger.error(f'response error: {response.status}')
+                return response.status

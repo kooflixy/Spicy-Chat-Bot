@@ -49,7 +49,9 @@ class SpicyAPI(BaseSpicyAPI):
             payload = self._create_payload(message=message, character_id=char_id),
             headers = self.headers
         )
-
+        if data == 403:
+            return
+        
         bot_msg: str = data['message']['content']
         new_conv_id: str = data['message']['conversation_id']
 
