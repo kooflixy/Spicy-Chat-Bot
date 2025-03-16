@@ -62,6 +62,8 @@ class SpicyBotHistoryORM(Base):
     user_id: Mapped[BigInteger] = mapped_column(ForeignKey('users.id', ondelete='CASCADE'))
     char_id: Mapped[str]
     conv_id: Mapped[str]
+    bot_name: Mapped[str]
     created_at: Mapped[created_attp]
+    updated_at: Mapped[updated_attp]
 
     repr_cols_num = 4

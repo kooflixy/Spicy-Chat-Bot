@@ -1,7 +1,10 @@
+from aiogram.types import Message
+
 from sqlalchemy import select
+from sqlalchemy.ext.asyncio import AsyncSession
 
 from db.database import Base, async_engine, async_session_factory
-from db.models import UsersORM, SpicyUsersRefreshTokensORM
+from db.models import UsersORM, SpicyUsersRefreshTokensORM, SpicyBotHistoryORM
 
 class AsyncORM:
     @staticmethod
@@ -51,3 +54,25 @@ class AsyncORM:
         async with async_session_factory() as session:
             session.add(spicy_user_refresh_token)
             await session.commit()
+    
+    @staticmethod
+    async def get_conv_history(session: AsyncSession, message: Message):
+        query = (
+            select(
+                SpicyBotHistoryORM
+            )
+            .filter_by(user_id=message.chat.id)
+        )
+        res = await session.execute(query)
+        return res.scalars().all()
+
+    @staticmethod
+    async def add_conv_in_history(session: AsyncSession, message: Message):
+        # не доделано
+        query = (
+            select(
+                SpicyBotHistoryORM
+            ).filter_by(user_id=message.chat.id)
+        )
+        res = await session.execute(query)
+        return res.scalars().all()
