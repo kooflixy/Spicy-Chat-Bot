@@ -1,4 +1,5 @@
 from spicy_api.api.api import SpicyAPI
+from spicy_api.api.classes.bot_profile import SpicyBotProfile
 
 class SpecialSpicyAPI(SpicyAPI):
     def __init__(self, user, logs=True):
@@ -14,7 +15,7 @@ class SpecialSpicyAPI(SpicyAPI):
         msg = resp[0].replace(self.user.name, username)
         return msg, resp[1]
     
-    async def get_bot_profile(self, char_id, username: str):
+    async def get_bot_profile(self, char_id, username: str) -> SpicyBotProfile:
         bot =  await super().get_bot_profile(char_id)
 
         bot.greeting = bot.greeting.replace('{{char}}', bot.name).replace('{{user}}', username)

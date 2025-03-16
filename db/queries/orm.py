@@ -1,8 +1,9 @@
 from aiogram.types import Message
 
-from sqlalchemy import select
+from sqlalchemy import select, func
 from sqlalchemy.ext.asyncio import AsyncSession
 
+import config
 from db.database import Base, async_engine, async_session_factory
 from db.models import UsersORM, SpicyUsersRefreshTokensORM, SpicyBotHistoryORM
 
@@ -67,12 +68,25 @@ class AsyncORM:
         return res.scalars().all()
 
     @staticmethod
-    async def add_conv_in_history(session: AsyncSession, message: Message):
-        # не доделано
+    async def add_conv_in_history(session: AsyncSession, message: Message, char_id: str, conv_id: str, bot_name: str, spicy_api):
         query = (
             select(
                 SpicyBotHistoryORM
-            ).filter_by(user_id=message.chat.id)
+            )
+            .filter_by(user_id=message.chat.id)
+            .order_by(SpicyBotHistoryORM.updated_at.asc())
         )
-        res = await session.execute(query)
-        return res.scalars().all()
+        chats = (await session.execute(query)).scalars().all()
+
+        if len(chats) >= config.MAX_HISTORY_BOTS_COUNT:
+            await spicy_api.delete_conversation(chats[0].conv_id)
+            await session.delete(SpicyBotHistoryORM, chats[0].id)
+        
+        new_chat = SpicyBotHistoryORM(
+            user_id=message.chat.id,
+            char_id=char_id,
+            conv_id=conv_id,
+            bot_name=bot_name
+        )
+
+        session.add(new_chat)

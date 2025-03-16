@@ -75,6 +75,8 @@ async def bot_profile(message: Message):
         )
 
 
+
+
 @router.message(Command('setbot'))
 async def setbot(message: Message, command: CommandObject):
     '''Changes user's sai_bot'''
@@ -109,15 +111,20 @@ async def start_to_chat_resp(callback: CallbackQuery, callback_data: inline.Star
 
         bot_message, new_conv_id = await spicy_api.create_conversation('Привет!', callback_data.char_id, callback.message.from_user.full_name)
         
-        await spicy_api.delete_conversation(user.conv_id)
+        bot_profile = await spicy_api.get_bot_profile(callback_data.char_id, callback.from_user.full_name)
 
         user.conv_id = new_conv_id
         user.char_id = callback_data.char_id
+        await AsyncORM.add_conv_in_history(session, callback.message, callback_data.char_id, new_conv_id, bot_profile.name, spicy_api)
+
         await session.commit()
 
         await callback.message.answer(bot_message)
 
         logger.info(f'{start_to_chat_resp.__name__} is handled {UserForLogs.log_name(callback.message)}: char_id={callback_data.char_id}, {new_conv_id=}')
+
+
+
 
 
 @router.message(Command('reset_chat'))
@@ -137,6 +144,8 @@ async def reset_chat(message: Message):
         await message.answer('<b>Чат успешно обновлён.</b>\n' + bot_message)
 
         logger.info(f'{reset_chat.__name__} is handled {UserForLogs.log_name(message)}: char_id={user_char_id}, {new_conv_id}')
+
+
 
 
 @router.message(Command('history'))
@@ -160,14 +169,7 @@ async def ask_to_continue_chat_with_bot(callback: CallbackQuery, callback_data: 
             caption=generate_sai_bot_desc(bot_profile),
             reply_markup=inline.ask_to_continue_chat(callback_data.bot_history_id)
         )
-        # bot = await session.get(SpicyBotHistoryORM, callback_data.bot_history_id)
-        # user = await session.get(UsersORM, callback.message.chat.id)
 
-        # user.char_id = bot.char_id
-        # user.conv_id = bot.conv_id
-        # await session.commit()
-
-        # await callback.message.answer(f'Чат успешно изменен')
 
 @router.callback_query(inline.SpicyBotAskToContinueCD.filter())
 async def continue_chat_with_bot(callback: CallbackQuery, callback_data: inline.SpicyBotAskToContinueCD):

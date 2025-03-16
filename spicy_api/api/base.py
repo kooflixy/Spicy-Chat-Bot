@@ -6,6 +6,8 @@ from spicy_api.auth.user import SpicyUser
 
 logger = logging.getLogger('spicy')
 
+class RefreshOutdated(Exception): ...
+
 class BaseSpicyAPI:
     def __init__(self, user: SpicyUser, logs: bool = True):
         if not user._is_activated:
@@ -39,7 +41,7 @@ class BaseSpicyAPI:
         async def wrapped(*args, **kwargs):
             try:
                 return await function(*args, **kwargs)
-            except:
+            except RefreshOutdated:
                 self: BaseSpicyAPI = args[0]
                 await self.user.update_bearer()
                 self.headers = {
@@ -69,4 +71,6 @@ class BaseSpicyAPI:
                 # raise Exception('NADO OBNOVIT BEARER')
             else:
                 logger.error(f'response error: {response.status}')
+                if response.status == 403: raise RefreshOutdated()
+
                 return response.status
