@@ -1,6 +1,6 @@
 import datetime
 from typing import Annotated
-from sqlalchemy import String, text, BigInteger
+from sqlalchemy import ForeignKey, String, text, BigInteger
 from sqlalchemy.orm import Mapped, mapped_column
 
 import config
@@ -53,3 +53,15 @@ class SpicyUsersRefreshTokensORM(Base):
 
     def as_dto(self) -> SpicyUsersRefreshTokensDTO:
         return super().as_dto()
+
+
+class SpicyBotHistoryORM(Base):
+    __tablename__ = 'spicy_bot_history'
+
+    id: Mapped[intpk]
+    user_id: Mapped[BigInteger] = mapped_column(ForeignKey('users.id', ondelete='CASCADE'))
+    char_id: Mapped[str]
+    conv_id: Mapped[str]
+    created_at: Mapped[created_attp]
+
+    repr_cols_num = 4
