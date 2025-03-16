@@ -1,3 +1,4 @@
+import aiohttp
 import logging
 from spicy_api.contrib.for_logging import do_log
 from spicy_api import settings
@@ -91,3 +92,17 @@ class SpicyAPI(BaseSpicyAPI):
         bot.avatar_url = 'https://ndsc.b-cdn.net/' + bot.avatar_url
 
         return bot
+
+    @do_log
+    async def search_bots(self, bot_name: str = None):
+        '''Search bots'''
+        async with aiohttp.ClientSession() as session:
+            response = await session.post(
+                url = settings.SPICY_SEARCH_BOTS_URL,
+                json=settings.genereate_search_data(bot_name)
+            )
+        
+        data = response['results'][0]['hits']
+        data = bot_profile.dict_to_spicybotdto(data)
+
+        return data

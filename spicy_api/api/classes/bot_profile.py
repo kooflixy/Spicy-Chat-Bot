@@ -27,3 +27,21 @@ class SpicyBotProfile(SpicyBotProfileSchema):
     
     def __str__(self):
         return f'SpicyBot({self.name})'
+
+
+class SpicyBotProfileSearchDTO(BaseModel):
+    name: str
+    id: str
+
+def dict_to_spicybotdto(data: list) -> list[SpicyBotProfileSearchDTO]:
+    res = []
+
+    for char in data:
+        res.append(
+            SpicyBotProfileSearchDTO(
+                name = char['name'],
+                id = char['id']
+            )
+        )
+    
+    return res
