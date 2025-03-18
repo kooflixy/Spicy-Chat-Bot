@@ -13,6 +13,7 @@ from db.queries.orm import AsyncORM
 from tg_bot.contrib.func_logger import UserForLogs
 from tg_bot.contrib.generator import get_random_smile, generate_sai_bot_desc
 from tg_bot.keyboards import inline
+from tg_bot.keyboards import reply
 
 import config
 from logging import getLogger
@@ -42,7 +43,7 @@ async def start(message: Message):
         user = await session.get(UsersORM, message.chat.id)
 
         if user:
-            await message.answer('Вы уже смешарик')
+            await message.answer('Вы уже смешарик', reply_markup=reply.menu_rkb)
             logger.info(f'{start.__name__} is handled: user is already registered {UserForLogs.log_name(message)}')
             return
         
@@ -58,12 +59,12 @@ async def start(message: Message):
         session.add(user)
         await session.commit()
 
-        await message.answer(bot_message)
+        await message.answer(bot_message, reply_markup=reply.menu_rkb)
 
         logger.info(f'{start.__name__} is handled {UserForLogs.log_name(message)}: {new_conv_id=}')
 
 
-@router.message(F.text.casefold().in_(['/bot_profile', 'бот']))
+@router.message(F.text.casefold().in_(['/bot_profile', 'бот', '👤бот']))
 async def bot_profile(message: Message):
     async with async_session_factory() as session:
         user = await session.get(UsersORM, message.chat.id)
@@ -72,7 +73,8 @@ async def bot_profile(message: Message):
 
         await message.reply_photo(
             photo=bot_profile.avatar_url,
-            caption=generate_sai_bot_desc(bot_profile)
+            caption=generate_sai_bot_desc(bot_profile),
+            reply_markup=reply.menu_rkb
         )
 
 
@@ -85,14 +87,14 @@ async def setbot(message: Message, command: CommandObject):
         user = await session.get(UsersORM, message.chat.id)
 
         if command.args == user.char_id:
-            await message.answer('У Вас уже стоит бот с этим айди')
+            await message.answer('У Вас уже стоит бот с этим айди', reply_markup=reply.menu_rkb)
             return
         
 
         bot_profile = await spicy_api.get_bot_profile(command.args, message.from_user.full_name)
 
         if not bot_profile:
-            await message.answer(f'Бота с айди <code>{command.args}</code> не существует')
+            await message.answer(f'Бота с айди <code>{command.args}</code> не существует', reply_markup=reply.menu_rkb)
             logger.info(f'{setbot.__name__} is handled: bot doesn`t exist {UserForLogs.log_name(message)} char_id={command.args}')
             return
         
@@ -128,7 +130,7 @@ async def start_to_chat_resp(callback: CallbackQuery, callback_data: inline.Star
 
 
 
-@router.message(F.text.casefold().in_(['/reset_chat', 'обновить чат']))
+@router.message(F.text.casefold().in_(['/reset_chat', 'обновить чат', '♻обновить чат']))
 async def reset_chat(message: Message):
     '''Resets user's conv with bot'''
     async with async_session_factory() as session:
@@ -142,14 +144,14 @@ async def reset_chat(message: Message):
         user.conv_id = new_conv_id
         await session.commit()
         
-        await message.answer('<b>Чат успешно обновлён.</b>\n' + bot_message)
+        await message.answer('<b>Чат успешно обновлён.</b>\n' + bot_message, reply_markup=reply.menu_rkb)
 
         logger.info(f'{reset_chat.__name__} is handled {UserForLogs.log_name(message)}: char_id={user_char_id}, {new_conv_id}')
 
 
 
 
-@router.message(F.text.casefold().in_(['/history', 'история']))
+@router.message(F.text.casefold().in_(['/history', 'история', '📃история']))
 async def history(message: Message):
     async with async_session_factory() as session:
         res = await AsyncORM.get_conv_history(session=session, message=message)
@@ -182,7 +184,7 @@ async def continue_chat_with_bot(callback: CallbackQuery, callback_data: inline.
         bot.updated_at = datetime.now(timezone.utc).replace(tzinfo=None)
         await session.commit()
 
-        await callback.message.answer(f'Чат успешно изменен')
+        await callback.message.answer(f'Чат успешно изменен', reply_markup=reply.menu_rkb)
 
 
 @router.message()
