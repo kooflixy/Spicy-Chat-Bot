@@ -24,10 +24,8 @@ class SpicyBotHistoryListCD(CallbackData, prefix='spicy_bot_history_list_cd'):
 def show_spicy_bot_history(bot_history: list[SpicyBotHistoryORM]):
     kb = InlineKeyboardMarkup(
         inline_keyboard=[
-            [
-                InlineKeyboardButton(text=f'{get_random_smile() + bot.bot_name}', callback_data=SpicyBotHistoryListCD(bot_history_id=bot.id, char_id=bot.char_id).pack())
-                for bot in bot_history
-            ]
+            [InlineKeyboardButton(text=f'{get_random_smile() + bot.bot_name}', callback_data=SpicyBotHistoryListCD(bot_history_id=bot.id, char_id=bot.char_id).pack())]
+            for bot in bot_history
         ]
     )
 

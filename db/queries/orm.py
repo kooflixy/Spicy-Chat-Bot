@@ -63,6 +63,7 @@ class AsyncORM:
                 SpicyBotHistoryORM
             )
             .filter_by(user_id=message.chat.id)
+            .order_by(SpicyBotHistoryORM.updated_at.desc())
         )
         res = await session.execute(query)
         return res.scalars().all()

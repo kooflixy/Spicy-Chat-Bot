@@ -1,4 +1,5 @@
-from aiogram import Router
+from datetime import datetime, timezone
+from aiogram import F, Router
 from aiogram.types import Message, CallbackQuery
 from aiogram.filters import CommandStart, Command, CommandObject
 
@@ -62,7 +63,7 @@ async def start(message: Message):
         logger.info(f'{start.__name__} is handled {UserForLogs.log_name(message)}: {new_conv_id=}')
 
 
-@router.message(Command('bot_profile'))
+@router.message(F.text.casefold().in_(['/bot_profile', 'бот']))
 async def bot_profile(message: Message):
     async with async_session_factory() as session:
         user = await session.get(UsersORM, message.chat.id)
@@ -127,7 +128,7 @@ async def start_to_chat_resp(callback: CallbackQuery, callback_data: inline.Star
 
 
 
-@router.message(Command('reset_chat'))
+@router.message(F.text.casefold().in_(['/reset_chat', 'обновить чат']))
 async def reset_chat(message: Message):
     '''Resets user's conv with bot'''
     async with async_session_factory() as session:
@@ -148,7 +149,7 @@ async def reset_chat(message: Message):
 
 
 
-@router.message(Command('history'))
+@router.message(F.text.casefold().in_(['/history', 'история']))
 async def history(message: Message):
     async with async_session_factory() as session:
         res = await AsyncORM.get_conv_history(session=session, message=message)
@@ -160,15 +161,14 @@ async def history(message: Message):
 
 @router.callback_query(inline.SpicyBotHistoryListCD.filter())
 async def ask_to_continue_chat_with_bot(callback: CallbackQuery, callback_data: inline.SpicyBotHistoryListCD):
-    async with async_session_factory() as session:
 
-        bot_profile = await spicy_api.get_bot_profile(callback_data.char_id, callback.message.from_user.full_name)
+    bot_profile = await spicy_api.get_bot_profile(callback_data.char_id, callback.message.from_user.full_name)
 
-        await callback.message.reply_photo(
-            photo=bot_profile.avatar_url,
-            caption=generate_sai_bot_desc(bot_profile),
-            reply_markup=inline.ask_to_continue_chat(callback_data.bot_history_id)
-        )
+    await callback.message.reply_photo(
+        photo=bot_profile.avatar_url,
+        caption=generate_sai_bot_desc(bot_profile),
+        reply_markup=inline.ask_to_continue_chat(callback_data.bot_history_id)
+    )
 
 
 @router.callback_query(inline.SpicyBotAskToContinueCD.filter())
@@ -179,6 +179,7 @@ async def continue_chat_with_bot(callback: CallbackQuery, callback_data: inline.
 
         user.char_id = bot.char_id
         user.conv_id = bot.conv_id
+        bot.updated_at = datetime.utcnow()
         await session.commit()
 
         await callback.message.answer(f'Чат успешно изменен')
