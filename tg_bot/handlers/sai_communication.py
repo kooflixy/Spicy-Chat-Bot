@@ -179,7 +179,7 @@ async def continue_chat_with_bot(callback: CallbackQuery, callback_data: inline.
 
         user.char_id = bot.char_id
         user.conv_id = bot.conv_id
-        bot.updated_at = datetime.utcnow()
+        bot.updated_at = datetime.now(timezone.utc).replace(tzinfo=None)
         await session.commit()
 
         await callback.message.answer(f'Чат успешно изменен')
