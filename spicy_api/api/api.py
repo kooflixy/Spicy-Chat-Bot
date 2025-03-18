@@ -98,11 +98,12 @@ class SpicyAPI(BaseSpicyAPI):
         '''Search bots'''
         async with aiohttp.ClientSession() as session:
             response = await session.post(
-                url = settings.SPICY_SEARCH_BOTS_URL,
+                url = settings.SPICY_SEARCH_BOTS_URL + f'?x-typesense-api-key={self.user.search_key}',
                 json=settings.genereate_search_data(bot_name)
             )
-        
-        data = response['results'][0]['hits']
+            data = await response.json()    
+
+        data = data['results'][0]['hits']
         data = bot_profile.dict_to_spicybotdto(data)
 
         return data

@@ -37,6 +37,7 @@ def dict_to_spicybotdto(data: list) -> list[SpicyBotProfileSearchDTO]:
     res = []
 
     for char in data:
+        char = char['document']
         res.append(
             SpicyBotProfileSearchDTO(
                 name = char['name'],

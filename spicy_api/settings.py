@@ -5,6 +5,7 @@ RETRY_MAX_COUNT = 5
 # URLS
 SPICY_USER_AUTH_URL = 'https://gamma.kinde.com/oauth2/token'
 SPICY_USER_DETAILS_URL = 'https://4mpanjbsf6.execute-api.us-east-1.amazonaws.com/v2/users'
+SPICY_SEARCH_KEY_URL = 'https://4mpanjbsf6.execute-api.us-east-1.amazonaws.com/v2/applications/spicychat'
 
 SPICY_GET_CONVERSATIONS_URL = 'https://4mpanjbsf6.execute-api.us-east-1.amazonaws.com/v2/characters/{char_id}/conversations'
 SPICY_DELETE_CONVERSATION_URL = 'https://4mpanjbsf6.execute-api.us-east-1.amazonaws.com/conversations/{conv_id}'
