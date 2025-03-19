@@ -12,6 +12,7 @@ from core.spicy.classes.special_spicy_api import SpecialSpicyAPI
 from db.queries.orm import AsyncORM
 from tg_bot.contrib.func_logger import UserForLogs
 from tg_bot.contrib.generator import get_random_smile, generate_sai_bot_desc
+from tg_bot.contrib.active_chat_sesses_checker import active_chats_sesses_checker
 from tg_bot.keyboards import inline
 from tg_bot.keyboards import reply
 
@@ -190,8 +191,11 @@ async def continue_chat_with_bot(callback: CallbackQuery, callback_data: inline.
 @router.message()
 async def talk_with_sai_bot(message: Message):
     '''Sends users's message to SpicyChat and gets response message'''
+    if active_chats_sesses_checker.check(message.chat.id): return
 
     async with async_session_factory() as session:
+        active_chats_sesses_checker.add(message.chat.id)
+
         user = await session.get(UsersORM, message.chat.id)
 
         if message.chat.type == 'private':
@@ -203,4 +207,5 @@ async def talk_with_sai_bot(message: Message):
 
             await message.reply(bot_message)
         
+        active_chats_sesses_checker.remove(message.chat.id)
         logger.info(f'{talk_with_sai_bot.__name__} is handled {UserForLogs.log_name(message)}')
