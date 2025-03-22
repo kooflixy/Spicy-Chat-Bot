@@ -38,6 +38,8 @@ async def sapiaccstart(message: Message):
     logger.info(f'{sapiaccstart.__name__} is handled {UserForLogs.log_name(message)}: activated {spicy_api=}, {spicy_user=}')
 
 
+
+
 @router.message(CommandStart())
 async def start(message: Message):
     '''Creates a new conversation if the user is not registered'''
@@ -65,6 +67,9 @@ async def start(message: Message):
         await message.answer(bot_message, reply_markup=reply.menu_rkb)
 
         logger.info(f'{start.__name__} is handled {UserForLogs.log_name(message)}: {new_conv_id=}')
+
+
+
 
 
 @router.message(F.text.casefold().in_(['/bot_profile', 'бот', '👤бот']))
@@ -108,7 +113,6 @@ async def setbot(message: Message, command: CommandObject):
         await message.answer(text=bot_profile.greeting, reply_markup=inline.start_to_chat_ask_ikb(bot_profile=bot_profile))
 
         logger.info(f'{setbot.__name__} is handled: ask to change {UserForLogs.log_name(message)} char_id={command.args}')
-
 
 @router.callback_query(inline.StartToChatAskCD.filter())
 async def start_to_chat_resp(callback: CallbackQuery, callback_data: inline.StartToChatAskCD):
@@ -154,6 +158,7 @@ async def reset_chat(message: Message):
 
 
 
+
 @router.message(F.text.casefold().in_(['/history', 'история', '📃история']))
 async def history(message: Message):
     async with async_session_factory() as session:
@@ -175,7 +180,6 @@ async def ask_to_continue_chat_with_bot(callback: CallbackQuery, callback_data: 
         reply_markup=inline.ask_to_continue_chat(callback_data.bot_history_id)
     )
 
-
 @router.callback_query(inline.SpicyBotAskToContinueCD.filter())
 async def continue_chat_with_bot(callback: CallbackQuery, callback_data: inline.SpicyBotAskToContinueCD):
     async with async_session_factory() as session:
@@ -190,6 +194,9 @@ async def continue_chat_with_bot(callback: CallbackQuery, callback_data: inline.
         await callback.message.answer(f'Чат успешно изменен', reply_markup=reply.menu_rkb)
 
 
+
+
+
 @router.message(Command('search'))
 async def search_bots(message: Message, command: CommandObject):
     search_res = (await spicy_api.search_bots(command.args))[0]
@@ -197,7 +204,7 @@ async def search_bots(message: Message, command: CommandObject):
     await message.reply_photo(
         photo = search_res.avatar_url,
         caption = generate_sai_bot_desc(search_res),
-        reply_markup=fabrics.pagination_ikb(command.args, 1)
+        reply_markup=fabrics.pagination_ikb(command.args, search_res.id, 1)
     )
 
 @router.callback_query(fabrics.SearchListPagination.filter(F.action.in_(['prev','next'])))
@@ -215,6 +222,26 @@ async def search_pagination(callback: CallbackQuery, callback_data: fabrics.Sear
         page_num=page_num,
         spicy_api=spicy_api,
     )
+
+@router.callback_query(fabrics.SearchSuggestBotCD.filter())
+async def ask_to_con_chat_with_search_bot(callback: CallbackQuery, callback_data: fabrics.SearchSuggestBotCD):
+    async with async_session_factory() as session:
+        user = await session.get(UsersORM, callback.message.chat.id)
+
+        if callback_data.char_id == user.char_id:
+            await callback.message.answer('У Вас уже стоит бот с этим айди', reply_markup=reply.menu_rkb)
+            return
+        
+
+        bot_profile = await spicy_api.get_bot_profile(callback_data.char_id, callback.message.from_user.full_name)
+
+        if not bot_profile:
+            await callback.message.answer(f'Этого бота не существует', reply_markup=reply.menu_rkb)
+            return
+        
+        await callback.message.answer(text=bot_profile.greeting, reply_markup=inline.start_to_chat_ask_ikb(bot_profile=bot_profile))
+
+
 
 @router.message()
 async def talk_with_sai_bot(message: Message):

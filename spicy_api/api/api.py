@@ -89,7 +89,7 @@ class SpicyAPI(BaseSpicyAPI):
         
         bot = bot_profile.SpicyBotProfile(**data)
 
-        bot.avatar_url = settings.SPICY_AVATAR_URL.format(bot.avatar_url)
+        bot.avatar_url = settings.SPICY_AVATAR_URL.format(avatar_slug=bot.avatar_url)
 
         return bot
 

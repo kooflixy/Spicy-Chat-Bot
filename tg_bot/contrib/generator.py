@@ -50,7 +50,7 @@ async def edit_search_bot_profile(message: Message, bot: SpicyBotProfileSearchDT
             media = bot.avatar_url,
             caption = generate_sai_bot_desc(bot),
         ),
-        reply_markup = fabrics.pagination_ikb(callback_data.name, page_num)
+        reply_markup = fabrics.pagination_ikb(callback_data.name, bot.id, page_num)
     )
 
 async def exs_edit_search_bot_profile(message: Message, callback_data: fabrics.SearchListPagination, page_num: int, spicy_api, try_: int = 0):
