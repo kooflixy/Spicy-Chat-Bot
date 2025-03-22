@@ -1,6 +1,6 @@
 from datetime import datetime, timezone
 from aiogram import F, Router
-from aiogram.types import Message, CallbackQuery
+from aiogram.types import Message, CallbackQuery, InputMediaPhoto
 from aiogram.filters import CommandStart, Command, CommandObject
 from aiogram.exceptions import TelegramBadRequest
 
@@ -12,7 +12,7 @@ from core.spicy.classes.special_spicy_api import SpecialSpicyAPI
 # from spicy_api.api.api import SpicyAPI
 from db.queries.orm import AsyncORM
 from tg_bot.contrib.func_logger import UserForLogs
-from tg_bot.contrib.generator import get_random_smile, generate_sai_bot_desc
+from tg_bot.contrib.generator import get_random_smile, generate_sai_bot_desc, exs_edit_search_bot_profile
 from tg_bot.contrib.active_chat_sesses_checker import active_chats_sesses_checker
 from tg_bot.keyboards import fabrics, inline
 from tg_bot.keyboards import reply
@@ -190,24 +190,31 @@ async def continue_chat_with_bot(callback: CallbackQuery, callback_data: inline.
         await callback.message.answer(f'Чат успешно изменен', reply_markup=reply.menu_rkb)
 
 
-@router.message(Command('pagtest'))
-async def pagtest(message: Message):
-    await message.answer(text='0', reply_markup=fabrics.pagination_ikb())
+@router.message(Command('search'))
+async def search_bots(message: Message, command: CommandObject):
+    search_res = (await spicy_api.search_bots(command.args))[0]
+
+    await message.reply_photo(
+        photo = search_res.avatar_url,
+        caption = generate_sai_bot_desc(search_res),
+        reply_markup=fabrics.pagination_ikb(command.args, 1)
+    )
 
 @router.callback_query(fabrics.SearchListPagination.filter(F.action.in_(['prev','next'])))
 async def search_pagination(callback: CallbackQuery, callback_data: fabrics.SearchListPagination):
     if callback_data.action == 'next':
         page_num = callback_data.page + 1
     else:
-        page_num = callback_data.page - 1 if callback_data.page > 0 else 0
+        if callback_data.page == 1: return
+        page_num = callback_data.page - 1
 
-    with suppress(TelegramBadRequest):
-        await callback.message.edit_text(
-            text=f'{page_num}',
-            reply_markup=fabrics.pagination_ikb(page_num)
-        )
-    
-    await callback.answer()
+
+    await exs_edit_search_bot_profile(
+        message=callback.message,
+        callback_data=callback_data,
+        page_num=page_num,
+        spicy_api=spicy_api,
+    )
 
 @router.message()
 async def talk_with_sai_bot(message: Message):
