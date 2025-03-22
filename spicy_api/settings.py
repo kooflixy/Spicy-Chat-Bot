@@ -13,8 +13,9 @@ SPICY_SEND_MESSAGE_URL = 'https://chat.nd-api.com/chat'
 
 SPICY_GET_BOT_PROFILE_URL = 'https://4mpanjbsf6.execute-api.us-east-1.amazonaws.com/v2/characters/{char_id}'
 SPICY_SEARCH_BOTS_URL = 'https://etmzpxgvnid370fyp.a1.typesense.net/multi_search'
+SPICY_AVATAR_URL = 'https://ndsc.b-cdn.net/{avatar_slug}'
 
-def genereate_search_data(bot_name: str = None):
+def genereate_search_data(bot_name: str = None, page: int = 1, count: int = 1):
 
     if not bot_name: bot_name = '*'
 
@@ -31,8 +32,8 @@ def genereate_search_data(bot_name: str = None):
             "facet_by":"tags",
             "filter_by":"application_ids:spicychat && tags:!Step-Family && is_nsfw:false",
             "max_facet_values":100,
-            "page":1,
-            "per_page":48
+            "page": page,
+            "per_page": count
         }
     ]
 }

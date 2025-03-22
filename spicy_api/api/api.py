@@ -89,17 +89,17 @@ class SpicyAPI(BaseSpicyAPI):
         
         bot = bot_profile.SpicyBotProfile(**data)
 
-        bot.avatar_url = 'https://ndsc.b-cdn.net/' + bot.avatar_url
+        bot.avatar_url = settings.SPICY_AVATAR_URL.format(bot.avatar_url)
 
         return bot
 
     @do_log
-    async def search_bots(self, bot_name: str = None):
+    async def search_bots(self, bot_name: str = None, page: int = 1, count: int = 1):
         '''Search bots'''
         async with aiohttp.ClientSession() as session:
             response = await session.post(
                 url = settings.SPICY_SEARCH_BOTS_URL + f'?x-typesense-api-key={self.user.search_key}',
-                json=settings.genereate_search_data(bot_name)
+                json=settings.genereate_search_data(bot_name, page, count)
             )
             data = await response.json()    
 

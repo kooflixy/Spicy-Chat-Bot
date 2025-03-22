@@ -1,6 +1,8 @@
 
 from pydantic import BaseModel
 
+from spicy_api import settings
+
 
 class SpicyBotProfileSchema(BaseModel):
     id: str
@@ -32,6 +34,12 @@ class SpicyBotProfile(SpicyBotProfileSchema):
 class SpicyBotProfileSearchDTO(BaseModel):
     name: str
     id: str
+    avatar_url: str
+    title: str
+    tags: list[str]
+
+    def __str__(self):
+        return f'<{self.__class__.__name__} name={self.name}>'
 
 def dict_to_spicybotdto(data: list) -> list[SpicyBotProfileSearchDTO]:
     res = []
@@ -41,7 +49,10 @@ def dict_to_spicybotdto(data: list) -> list[SpicyBotProfileSearchDTO]:
         res.append(
             SpicyBotProfileSearchDTO(
                 name = char['name'],
-                id = char['id']
+                id = char['id'],
+                avatar_url = settings.SPICY_AVATAR_URL.format(avatar_slug=char['avatar_url']),
+                title = char['title'],
+                tags = char['tags'],
             )
         )
     
