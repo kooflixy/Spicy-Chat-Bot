@@ -2,6 +2,7 @@ from datetime import datetime, timezone
 from aiogram import F, Router
 from aiogram.types import Message, CallbackQuery
 from aiogram.filters import CommandStart, Command, CommandObject
+from aiogram.exceptions import TelegramBadRequest
 
 from db.database import async_session_factory
 from db.models import UsersORM, SpicyBotHistoryORM
@@ -13,10 +14,11 @@ from db.queries.orm import AsyncORM
 from tg_bot.contrib.func_logger import UserForLogs
 from tg_bot.contrib.generator import get_random_smile, generate_sai_bot_desc
 from tg_bot.contrib.active_chat_sesses_checker import active_chats_sesses_checker
-from tg_bot.keyboards import inline
+from tg_bot.keyboards import fabrics, inline
 from tg_bot.keyboards import reply
 
 import config
+from contextlib import suppress
 from logging import getLogger
 
 logger = getLogger(__name__)
@@ -187,6 +189,25 @@ async def continue_chat_with_bot(callback: CallbackQuery, callback_data: inline.
 
         await callback.message.answer(f'Чат успешно изменен', reply_markup=reply.menu_rkb)
 
+
+@router.message(Command('pagtest'))
+async def pagtest(message: Message):
+    await message.answer(text='0', reply_markup=fabrics.pagination_ikb())
+
+@router.callback_query(fabrics.SearchListPagination.filter(F.action.in_(['prev','next'])))
+async def search_pagination(callback: CallbackQuery, callback_data: fabrics.SearchListPagination):
+    if callback_data.action == 'next':
+        page_num = callback_data.page + 1
+    else:
+        page_num = callback_data.page - 1 if callback_data.page > 0 else 0
+
+    with suppress(TelegramBadRequest):
+        await callback.message.edit_text(
+            text=f'{page_num}',
+            reply_markup=fabrics.pagination_ikb(page_num)
+        )
+    
+    await callback.answer()
 
 @router.message()
 async def talk_with_sai_bot(message: Message):
