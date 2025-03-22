@@ -197,14 +197,17 @@ async def continue_chat_with_bot(callback: CallbackQuery, callback_data: inline.
 
 
 
-@router.message(Command('search'))
-async def search_bots(message: Message, command: CommandObject):
-    search_res = (await spicy_api.search_bots(command.args))[0]
+@router.message(F.text.lower().startswith('!поиск'))
+async def search_bots(message: Message):
+    bot_name = message.text[7:]
+    if not bot_name: return
+
+    search_res = (await spicy_api.search_bots(bot_name))[0]
 
     await message.reply_photo(
         photo = search_res.avatar_url,
         caption = generate_sai_bot_desc(search_res),
-        reply_markup=fabrics.pagination_ikb(command.args, search_res.id, 1)
+        reply_markup=fabrics.pagination_ikb(bot_name, search_res.id, 1)
     )
 
 @router.callback_query(fabrics.SearchListPagination.filter(F.action.in_(['prev','next'])))
