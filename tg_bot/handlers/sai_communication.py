@@ -1,19 +1,19 @@
-from datetime import datetime, timezone
 from aiogram import F, Router
 from aiogram.types import Message, CallbackQuery
 from aiogram.filters import CommandStart, Command, CommandObject
 
+from core.spicy.objs import spicy_api
 from db.database import async_session_factory
 from db.models import UsersORM, SpicyBotHistoryORM
-
 from db.queries.orm import AsyncORM
-from tg_bot.handlers.sai_accs_setts import spicy_api
+
 from tg_bot.contrib.func_logger import UserForLogs
 from tg_bot.contrib.generator import generate_sai_bot_desc, exs_edit_search_bot_profile
 from tg_bot.contrib.active_chat_sesses_checker import active_chats_sesses_checker
 from tg_bot.keyboards import fabrics, inline
 from tg_bot.keyboards import reply
 
+from datetime import datetime, timezone
 import config
 from logging import getLogger
 

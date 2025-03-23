@@ -1,10 +1,10 @@
 import asyncio
 import logging
-from tg_bot.handlers import sai_accs_setts
+from core.spicy.objs import botstart
 
 async def main():
-    await sai_accs_setts.botstart()
-    
+    await botstart()
+
     from tg_bot import bot
     await bot.main()
 
