@@ -17,7 +17,7 @@ def start_to_chat_ask_ikb(bot_profile: SpicyBotProfile):
     return kb
 
 
-class SpicyBotHistoryListCD(CallbackData, prefix='spicy_bot_history_list_cd'):
+class SpicyBotHistoryListCD(CallbackData, prefix='sbot_his'):
     bot_history_id: int
     char_id: str
 

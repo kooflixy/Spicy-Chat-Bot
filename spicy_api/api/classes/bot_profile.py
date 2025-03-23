@@ -18,7 +18,6 @@ class SpicyBotProfileSchema(BaseModel):
     avatar_is_nsfw: bool
     definition_visible: bool
     tags: list
-    lora_status: str
     token_count: int
     reportsType: list = []
 

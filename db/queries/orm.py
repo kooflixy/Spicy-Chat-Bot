@@ -1,6 +1,6 @@
 from aiogram.types import Message
 
-from sqlalchemy import select, func
+from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
 import config
@@ -82,7 +82,7 @@ class AsyncORM:
 
         if len(chats) >= config.MAX_HISTORY_BOTS_COUNT:
             await spicy_api.delete_conversation(chats[0].conv_id)
-            await session.delete(SpicyBotHistoryORM, chats[0].id)
+            await session.delete(chats[0])
         
         new_chat = SpicyBotHistoryORM(
             user_id=message.chat.id,

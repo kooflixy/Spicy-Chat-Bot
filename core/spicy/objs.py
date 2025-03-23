@@ -11,8 +11,7 @@ logger = getLogger(__name__)
 spicy_api: SpicyAPI = None
 
 async def botstart():
-    '''Outdated
-    Currently used tg_bot.handlers.sai_communication.sapiaccstart'''
+    '''Activate SpicyAPI for all project'''
     global spicy_api, spicy_user
 
     spicy_user = SpecialSpicyUser()
