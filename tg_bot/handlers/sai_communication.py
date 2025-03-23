@@ -1,42 +1,24 @@
 from datetime import datetime, timezone
 from aiogram import F, Router
-from aiogram.types import Message, CallbackQuery, InputMediaPhoto
+from aiogram.types import Message, CallbackQuery
 from aiogram.filters import CommandStart, Command, CommandObject
-from aiogram.exceptions import TelegramBadRequest
 
 from db.database import async_session_factory
 from db.models import UsersORM, SpicyBotHistoryORM
 
-from core.spicy.classes.special_spicy_user import SpecialSpicyUser
-from core.spicy.classes.special_spicy_api import SpecialSpicyAPI
-# from spicy_api.api.api import SpicyAPI
 from db.queries.orm import AsyncORM
+from tg_bot.handlers.sai_accs_setts import spicy_api
 from tg_bot.contrib.func_logger import UserForLogs
-from tg_bot.contrib.generator import get_random_smile, generate_sai_bot_desc, exs_edit_search_bot_profile
+from tg_bot.contrib.generator import generate_sai_bot_desc, exs_edit_search_bot_profile
 from tg_bot.contrib.active_chat_sesses_checker import active_chats_sesses_checker
 from tg_bot.keyboards import fabrics, inline
 from tg_bot.keyboards import reply
 
 import config
-from contextlib import suppress
 from logging import getLogger
 
 logger = getLogger(__name__)
 router = Router()
-
-
-@router.message(Command('sapiaccstart'))
-async def sapiaccstart(message: Message):
-    '''Activates SpicyAPI in this file'''
-    global spicy_api, spicy_user
-
-    spicy_user = SpecialSpicyUser()
-    await spicy_user.activate(config.SPICY_ACTIVE_USER_ID)
-    spicy_api = SpecialSpicyAPI(spicy_user)
-
-    await message.answer('SpicyAPI activated')
-    logger.info(f'{sapiaccstart.__name__} is handled {UserForLogs.log_name(message)}: activated {spicy_api=}, {spicy_user=}')
-
 
 
 

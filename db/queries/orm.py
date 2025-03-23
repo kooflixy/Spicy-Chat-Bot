@@ -42,8 +42,9 @@ class AsyncORM:
     async def update_refresh_token(spicy_user_id: str, new_refresh_token: str) -> None:
         async with async_session_factory() as session:
             spicy_user_refresh_token = await session.get(SpicyUsersRefreshTokensORM, spicy_user_id)
-            spicy_user_refresh_token.refresh_token = new_refresh_token
-            await session.commit()
+            if spicy_user_refresh_token.refresh_token != new_refresh_token:
+                spicy_user_refresh_token.refresh_token = new_refresh_token
+                await session.commit()
     
     @staticmethod
     async def insert_refresh_token(spicy_user_id: str, client_id: str, refresh_token: str) -> None:

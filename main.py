@@ -1,8 +1,11 @@
 import asyncio
 import logging
-from tg_bot import bot
+from tg_bot.handlers import sai_accs_setts
 
 async def main():
+    await sai_accs_setts.botstart()
+    
+    from tg_bot import bot
     await bot.main()
 
 if __name__ == '__main__':
