@@ -27,7 +27,7 @@ async def setbot(message: Message, command: CommandObject):
             return
         
 
-        bot_profile = await spicy_api.get_bot_profile(command.args, message.from_user.full_name)
+        bot_profile = await spicy_api.get_bot_profile(command.args)
 
         if not bot_profile:
             await message.answer(f'Бота с айди <code>{command.args}</code> не существует', reply_markup=reply.menu_rkb)
@@ -49,7 +49,7 @@ async def start_to_chat_resp(callback: CallbackQuery, callback_data: inline.Star
 
         bot_message, new_conv_id = await spicy_api.create_conversation('Привет!', callback_data.char_id, callback.message.from_user.full_name)
         
-        bot_profile = await spicy_api.get_bot_profile(callback_data.char_id, callback.from_user.full_name)
+        bot_profile = await spicy_api.get_bot_profile(callback_data.char_id)
 
         user.conv_id = new_conv_id
         user.char_id = callback_data.char_id

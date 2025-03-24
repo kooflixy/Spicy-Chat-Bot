@@ -35,7 +35,7 @@ async def history(message: Message):
 @router.callback_query(inline.SpicyBotHistoryListCD.filter())
 async def ask_to_continue_chat_with_bot(callback: CallbackQuery, callback_data: inline.SpicyBotHistoryListCD):
     '''Asks the user whether to change the active chat'''
-    bot_profile = await spicy_api.get_bot_profile(callback_data.char_id, callback.message.from_user.full_name)
+    bot_profile = await spicy_api.get_bot_profile(callback_data.char_id)
 
     await callback.message.reply_photo(
         photo=bot_profile.avatar_url,

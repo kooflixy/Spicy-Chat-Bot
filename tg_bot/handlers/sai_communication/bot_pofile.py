@@ -18,7 +18,7 @@ async def get_bot_profile(message: Message):
     async with async_session_factory() as session:
         user = await session.get(UsersORM, message.chat.id)
         
-        bot_profile = await spicy_api.get_bot_profile(user.char_id, message.from_user.full_name)
+        bot_profile = await spicy_api.get_bot_profile(user.char_id)
 
         await message.reply_photo(
             photo=bot_profile.avatar_url,

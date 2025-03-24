@@ -53,7 +53,7 @@ async def ask_to_con_chat_with_search_bot(callback: CallbackQuery, callback_data
             return
         
 
-        bot_profile = await spicy_api.get_bot_profile(callback_data.char_id, callback.message.from_user.full_name)
+        bot_profile = await spicy_api.get_bot_profile(callback_data.char_id)
 
         if not bot_profile:
             await callback.message.answer(f'Этого бота не существует', reply_markup=reply.menu_rkb)

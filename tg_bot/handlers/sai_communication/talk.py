@@ -8,8 +8,10 @@ from db.models import UsersORM
 from tg_bot.contrib.func_logger import UserForLogs
 from tg_bot.contrib.active_chat_sesses_checker import active_chats_sesses_checker
 
+from googletrans import Translator
 from logging import getLogger
 
+tranlator = Translator()
 logger = getLogger(__name__)
 router = Router()
 
@@ -26,7 +28,7 @@ async def talk_with_sai_bot(message: Message):
 
         if message.chat.type == 'private':
             bot_message = await spicy_api.send_message(message=message.text, char_id=user.char_id, conv_id=user.conv_id, username=message.from_user.full_name)
-
+            
             await message.answer(bot_message)
         else:
             bot_message = await spicy_api.send_message(message=message.text, char_id=user.char_id, conv_id=user.conv_id, username=message.from_user.full_name)
