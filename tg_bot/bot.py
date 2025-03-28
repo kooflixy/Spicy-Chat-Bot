@@ -2,7 +2,7 @@ from aiogram import Bot, Dispatcher
 from aiogram.client.default import DefaultBotProperties
 from aiogram.enums.parse_mode import ParseMode
 import config
-from tg_bot.handlers import bot_messages, sai_communication
+from tg_bot.handlers import admin, bot_messages, sai_communication
 from tg_bot.handlers import user_commands
 
 async def main():
@@ -11,6 +11,7 @@ async def main():
     dp.include_routers(
         user_commands.router,
         bot_messages.router,
+        admin.router,
 
         sai_communication.set_bot.router,
         sai_communication.bot_pofile.router,
