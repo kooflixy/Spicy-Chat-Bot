@@ -1,5 +1,5 @@
 import asyncio
-from aiogram.types import Message, InputMediaPhoto
+from aiogram.types import Message, CallbackQuery, InputMediaPhoto
 from aiogram.exceptions import TelegramBadRequest
 from tg_bot.keyboards import fabrics
 from datetime import datetime, timezone
@@ -53,15 +53,19 @@ async def edit_search_bot_profile(message: Message, bot: SpicyBotProfileSearchDT
         reply_markup = fabrics.pagination_ikb(callback_data.name, bot.id, page_num)
     )
 
-async def exs_edit_search_bot_profile(message: Message, callback_data: fabrics.SearchListPagination, page_num: int, spicy_api, try_: int = 0):
+async def exs_edit_search_bot_profile(callback: CallbackQuery, callback_data: fabrics.SearchListPagination, page_num: int, spicy_api, try_: int = 0):
     if try_ == 5: return
 
-    bot = (await spicy_api.search_bots(callback_data.name, page = page_num))[0]
+    bot = await spicy_api.search_bots(callback_data.name, page = page_num)
+    if not bot:
+        await callback.answer('Ботов с таким именем больше нет')
+        return
+    bot = bot[0]
     try:
-        await edit_search_bot_profile(message, bot, callback_data, page_num)
+        await edit_search_bot_profile(callback.message, bot, callback_data, page_num)
     except TelegramBadRequest as ex:
         if ex.message == 'Bad Request: wrong type of the web page content':
-            if callback_data.action == 'next': await exs_edit_search_bot_profile(message, callback_data, page_num+1, spicy_api, try_=try_+1)
+            if callback_data.action == 'next': await exs_edit_search_bot_profile(callback, callback_data, page_num+1, spicy_api, try_=try_+1)
             else:
                 if page_num == 1: return
-                await exs_edit_search_bot_profile(message, callback_data, page_num-1, spicy_api, try_=try_+1)
+                await exs_edit_search_bot_profile(callback.message, callback_data, page_num-1, spicy_api, try_=try_+1)

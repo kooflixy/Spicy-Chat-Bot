@@ -17,9 +17,16 @@ router = Router()
 @router.message(F.text.lower().startswith('!поиск'))
 async def search_bots(message: Message):
     bot_name = message.text[7:]
-    if not bot_name: return
+    if not bot_name: bot_name = '*'
 
-    search_res = (await spicy_api.search_bots(bot_name))[0]
+    search_res = await spicy_api.search_bots(bot_name)
+    if not search_res:
+        await message.answer(
+            text=f'<code>{bot_name}</code>\nТаких ботов не существует'
+        )
+        return
+
+    search_res = search_res[0]
 
     await message.reply_photo(
         photo = search_res.avatar_url,
@@ -37,7 +44,7 @@ async def search_pagination(callback: CallbackQuery, callback_data: fabrics.Sear
 
 
     await exs_edit_search_bot_profile(
-        message=callback.message,
+        callback=callback,
         callback_data=callback_data,
         page_num=page_num,
         spicy_api=spicy_api,

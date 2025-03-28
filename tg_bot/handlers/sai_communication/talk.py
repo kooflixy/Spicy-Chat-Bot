@@ -8,10 +8,8 @@ from db.models import UsersORM
 from tg_bot.contrib.func_logger import UserForLogs
 from tg_bot.contrib.active_chat_sesses_checker import active_chats_sesses_checker
 
-from googletrans import Translator
 from logging import getLogger
 
-tranlator = Translator()
 logger = getLogger(__name__)
 router = Router()
 
