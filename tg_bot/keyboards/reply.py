@@ -7,7 +7,11 @@ menu_rkb = ReplyKeyboardMarkup(
         ],
         [
             KeyboardButton(text='♻Обновить чат'),
-            KeyboardButton(text='📃История')
+            KeyboardButton(text='🔍Поиск')
+        ],
+        [
+            KeyboardButton(text='📃История'),
+            KeyboardButton(text='⚙Настройки')
         ]
     ],
     resize_keyboard=True,

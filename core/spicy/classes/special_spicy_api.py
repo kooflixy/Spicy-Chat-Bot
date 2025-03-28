@@ -28,7 +28,7 @@ class SpecialSpicyAPI(SpicyAPI):
     async def get_bot_profile(self, char_id) -> SpicyBotProfile:
         bot =  await super().get_bot_profile(char_id)
 
-        bot.greeting = yt.translate('en', 'ru', replace_asterix_with_italic(bot.greeting.replace('{{char}}', bot.name)))
+        bot.greeting = yt.translate('en', 'ru', bot.greeting.replace('{{char}}', bot.name))
         bot.title = yt.translate('en', 'ru', replace_asterix_with_italic(bot.title.replace('{{char}}', bot.name)))
 
 
