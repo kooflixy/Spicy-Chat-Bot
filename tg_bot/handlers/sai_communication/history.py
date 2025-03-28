@@ -42,6 +42,7 @@ async def ask_to_continue_chat_with_bot(callback: CallbackQuery, callback_data: 
         caption=generate_sai_bot_desc(bot_profile),
         reply_markup=inline.ask_to_continue_chat(callback_data.bot_history_id)
     )
+    logger.info(f'{ask_to_continue_chat_with_bot.__name__} is handled {UserForLogs.log_name(callback.message)}')
 
 @router.callback_query(inline.SpicyBotAskToContinueCD.filter())
 async def continue_chat_with_bot(callback: CallbackQuery, callback_data: inline.SpicyBotAskToContinueCD):
@@ -56,3 +57,4 @@ async def continue_chat_with_bot(callback: CallbackQuery, callback_data: inline.
         await session.commit()
 
         await callback.message.answer(f'Чат успешно изменен', reply_markup=reply.menu_rkb)
+    logger.info(f'{continue_chat_with_bot.__name__} is handled {UserForLogs.log_name(callback.message)}')

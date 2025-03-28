@@ -15,6 +15,7 @@ logger = getLogger(__name__)
 
 @router.message(F.text.casefold().in_(['/bot_profile', 'бот', '👤бот']))
 async def get_bot_profile(message: Message):
+    '''Sends the user the active bot profile'''
     async with async_session_factory() as session:
         user = await session.get(UsersORM, message.chat.id)
         

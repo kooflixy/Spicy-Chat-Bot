@@ -19,11 +19,14 @@ router = Router()
 @router.message(Command('setbot'))
 async def setbot(message: Message, command: CommandObject):
     '''Changes user's sai_bot'''
+    
     async with async_session_factory() as session:
         user = await session.get(UsersORM, message.chat.id)
 
         if command.args == user.char_id:
             await message.answer('У Вас уже стоит бот с этим айди', reply_markup=reply.menu_rkb)
+
+            logger.info(f'{setbot.__name__} is handled: bot is already in use {UserForLogs.log_name(message)}')
             return
         
 
@@ -44,6 +47,8 @@ async def setbot(message: Message, command: CommandObject):
 
 @router.callback_query(inline.StartToChatAskCD.filter())
 async def start_to_chat_resp(callback: CallbackQuery, callback_data: inline.StartToChatAskCD):
+    '''Asks the user whether to start a chat'''
+
     async with async_session_factory() as session:
         user = await session.get(UsersORM, callback.message.chat.id)
 
@@ -59,4 +64,4 @@ async def start_to_chat_resp(callback: CallbackQuery, callback_data: inline.Star
 
         await callback.message.answer(bot_message)
 
-        logger.info(f'{start_to_chat_resp.__name__} is handled {UserForLogs.log_name(callback.message)}: char_id={callback_data.char_id}, {new_conv_id=}')
+        logger.info(f'{start_to_chat_resp.__name__} is handled {UserForLogs.log_name(callback.message)} char_id={callback_data.char_id}, {new_conv_id=}')
