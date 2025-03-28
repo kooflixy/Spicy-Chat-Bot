@@ -29,6 +29,8 @@ async def send_post(message:Message, state:FSMContext):
     
     count = 0
     for user in users:
-        await message.send_copy(chat_id=user)
-        count+=1
+        try:
+            await message.send_copy(chat_id=user)
+            count+=1
+        except: ...
     await message.answer(text=f'Пост был отправлен в {count} чатов')
