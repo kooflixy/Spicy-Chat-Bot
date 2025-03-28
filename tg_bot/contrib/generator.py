@@ -1,4 +1,3 @@
-import asyncio
 from aiogram.types import Message, CallbackQuery, InputMediaPhoto
 from aiogram.exceptions import TelegramBadRequest
 from tg_bot.keyboards import fabrics

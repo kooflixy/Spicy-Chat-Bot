@@ -3,7 +3,6 @@ from typing import Annotated
 from sqlalchemy import ForeignKey, String, text, BigInteger
 from sqlalchemy.orm import Mapped, mapped_column
 
-import config
 from db.schemas import UsersDTO, SpicyUsersRefreshTokensDTO
 from db.database import Base
 
