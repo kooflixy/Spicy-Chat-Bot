@@ -10,10 +10,10 @@ logger = getLogger(__name__)
 
 spicy_api: SpicyAPI = None
 
-async def botstart():
+async def botstart(logs: bool = True):
     '''Activate SpicyAPI for all project'''
     global spicy_api, spicy_user
 
-    spicy_user = SpecialSpicyUser()
+    spicy_user = SpecialSpicyUser(logs=logs)
     await spicy_user.activate(config.SPICY_ACTIVE_USER_ID)
-    spicy_api = SpecialSpicyAPI(spicy_user)
+    spicy_api = SpecialSpicyAPI(spicy_user, logs=logs)

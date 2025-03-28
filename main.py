@@ -1,9 +1,10 @@
 import asyncio
 import logging
 from core.spicy.objs import botstart
+import config
 
 async def main():
-    await botstart()
+    await botstart(logs=config.SPICY_LOGS)
 
     from tg_bot import bot
     await bot.main()
