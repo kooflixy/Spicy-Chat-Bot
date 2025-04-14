@@ -92,3 +92,17 @@ class AsyncORM:
         )
 
         session.add(new_chat)
+    
+    @staticmethod
+    async def add_spicy_refresh_token(spicy_user_id: str, spicy_current_refresh_token: str, spicy_client_id: str) -> None:
+        '''Used to check if there is already a spicy user with a refresh token in the database. And if there isn't one, it is added automatically.'''
+        async with async_session_factory() as session:
+            spicy_user_refresh_token = await session.get(SpicyUsersRefreshTokensORM, spicy_user_id)
+            if not spicy_user_refresh_token:
+                new_spicy_user_refresh_token = SpicyUsersRefreshTokensORM(
+                    id=spicy_user_id,
+                    refresh_token=spicy_current_refresh_token,
+                    client_id=spicy_client_id,
+                )
+                session.add(new_spicy_user_refresh_token)
+                await session.commit()
