@@ -17,7 +17,7 @@ Install my-project with npm
   git clone https://github.com/kooflixy/Spicy-Chat-Bot
   pip install -r requirements.txt
 ```
-    
+
 ## Usage/Examples
 To start, you need to create a config.py file in the root folder of the project and enter this data into it:
 
@@ -46,6 +46,24 @@ MAX_HISTORY_BOTS_COUNT = 5
 TG_BOT_API_TOKEN = ''
 TG_ADMINS: list[int] = []
 ```
+
+
+## Screenshots
+
+- Dialogue with the bot  
+![dialogue_screen.jpg](https://github.com/kooflixy/Spicy-Chat-Bot/blob/main/images/dialogue_screen.jpg)
+
+- History of dialogues with bots  
+![history_screen.jpg](https://github.com/kooflixy/Spicy-Chat-Bot/blob/main/images/history_screen.jpg)
+
+- Search bots by name  
+![search_screen.jpg](https://github.com/kooflixy/Spicy-Chat-Bot/blob/main/images/search_screen.jpg)
+
+- Bot profile  
+![bot_profile_screen.jpg](https://github.com/kooflixy/Spicy-Chat-Bot/blob/main/images/bot_profile_screen.jpg)
+
+- Chat update
+![chat_update_screen.jpg](https://github.com/kooflixy/Spicy-Chat-Bot/blob/main/images/chat_update_screen.jpg)
 
 
 ## Tech Stack
