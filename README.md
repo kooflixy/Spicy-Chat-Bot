@@ -43,6 +43,7 @@ DB_NAME = ''
 MAX_HISTORY_BOTS_COUNT = 5
 
 # tg
+TG_BOT_USERNAME = ''
 TG_BOT_API_TOKEN = ''
 TG_ADMINS: list[int] = []
 ```

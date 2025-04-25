@@ -1,6 +1,7 @@
 from aiogram import Router
 from aiogram.types import Message
 
+import config
 from core.spicy.objs import spicy_api
 from db.database import async_session_factory
 from db.models import UsersORM
@@ -30,12 +31,12 @@ async def talk_with_sai_bot(message: Message):
                 
                 await message.answer(bot_message)
             else:
-                bot_message = await spicy_api.send_message(message=message.text, char_id=user.char_id, conv_id=user.conv_id, username=message.from_user.full_name)
+                if (message.reply_to_message != None) or (config.TG_BOT_USERNAME):
+                    bot_message = await spicy_api.send_message(message=message.text, char_id=user.char_id, conv_id=user.conv_id, username=message.from_user.full_name)
 
-                await message.reply(bot_message)
+                    await message.reply(bot_message)
             
-            active_chats_sesses_checker.remove(message.chat.id)
             logger.info(f'{talk_with_sai_bot.__name__} is handled {UserForLogs.log_name(message)}')
     except Exception as ex:
-        active_chats_sesses_checker.remove(message.chat.id)
         logger.info(f'{talk_with_sai_bot.__name__} is handled {UserForLogs.log_name(message)}: error {ex}')
+    active_chats_sesses_checker.remove(message.chat.id)

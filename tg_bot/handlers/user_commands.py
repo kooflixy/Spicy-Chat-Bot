@@ -4,8 +4,9 @@ from aiogram.filters import CommandStart
 
 from core.spicy.objs import spicy_api
 from db.database import async_session_factory
-from db.models import UsersORM
+from db.models import SpicyBotHistoryORM, UsersORM
 
+from db.queries.orm import AsyncORM
 from tg_bot.contrib.func_logger import UserForLogs
 from tg_bot.keyboards import reply
 
@@ -30,6 +31,7 @@ async def start(message: Message):
             return
         
         bot_message, new_conv_id = await spicy_api.create_conversation('Привет!', config.SPICY_DEFAULT_AI_BOT_ID, message.from_user.full_name)
+        bot_name = await spicy_api.get_bot_profile(config.SPICY_DEFAULT_AI_BOT_ID)
 
         user = UsersORM(
             id = message.chat.id,
@@ -37,8 +39,17 @@ async def start(message: Message):
             char_id = config.SPICY_DEFAULT_AI_BOT_ID,
             conv_id = new_conv_id
         )
+        new_chat = SpicyBotHistoryORM(
+            user_id=message.chat.id,
+            char_id=config.SPICY_DEFAULT_AI_BOT_ID,
+            conv_id=new_conv_id,
+            bot_name=bot_name.name
+        )
 
         session.add(user)
+        await session.flush()
+
+        session.add(new_chat)
         await session.commit()
 
         await message.answer(bot_message, reply_markup=reply.menu_rkb)
