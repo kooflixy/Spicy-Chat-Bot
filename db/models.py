@@ -1,6 +1,7 @@
 import datetime
-from typing import Annotated
-from sqlalchemy import ForeignKey, String, text, BigInteger
+import enum
+from typing import Annotated, Optional
+from sqlalchemy import Enum, ForeignKey, String, text, BigInteger
 from sqlalchemy.orm import Mapped, mapped_column
 
 from db.schemas import UsersDTO, SpicyUsersRefreshTokensDTO
@@ -13,14 +14,18 @@ updated_attp = Annotated[datetime.datetime, mapped_column(
         onupdate=text("TIMEZONE('utc', now())")
     )]
 
-
+class Langs(enum.Enum):
+    RU = 'ru'
+    EN = 'en'
+    
 class UsersORM(Base):
     __tablename__ = 'users'
 
     id: Mapped[int] = mapped_column(BigInteger, primary_key=True)
-    username: Mapped[str | None] = mapped_column(String(100))
+    username: Mapped[Optional[str]] = mapped_column(String(100))
     char_id: Mapped[str]
     conv_id: Mapped[str]
+    lang: Mapped[Optional[str]] = mapped_column(Enum(Langs).values_callable, default=Langs.RU)
     created_at: Mapped[created_attp]
     updated_at: Mapped[updated_attp]
 
