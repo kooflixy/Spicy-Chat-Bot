@@ -4,7 +4,7 @@ from aiogram.filters import CommandStart
 
 from core.spicy.objs import spicy_api
 from db.database import async_session_factory
-from db.models import SpicyBotHistoryORM, UsersORM
+from db.models import Langs, SpicyBotHistoryORM, UsersORM
 
 from db.queries.orm import AsyncORM
 from tg_bot.contrib.func_logger import UserForLogs
@@ -37,7 +37,8 @@ async def start(message: Message):
             id = message.chat.id,
             username = message.chat.full_name,
             char_id = config.SPICY_DEFAULT_AI_BOT_ID,
-            conv_id = new_conv_id
+            conv_id = new_conv_id,
+            lang = Langs.RU.value
         )
         new_chat = SpicyBotHistoryORM(
             user_id=message.chat.id,
