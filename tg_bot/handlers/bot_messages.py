@@ -1,7 +1,9 @@
 from logging import getLogger
 from aiogram import F, Router
 from aiogram.types import Message
+from db.database import async_session_factory
 
+from db.models import Langs, UsersORM
 from tg_bot.contrib.func_logger import UserForLogs
 
 logger = getLogger(__name__)
@@ -14,7 +16,9 @@ async def search_rkb_ans(message: Message):
 
 @router.message(F.text.casefold().in_(['/settings', '⚙настройки', 'настройки']))
 async def setts_rkb_ans(message: Message):
-    await message.answer('Язык: RU🇷🇺')
+    async with async_session_factory() as session:
+        user = await session.get(UsersORM, message.chat.id)
+        await message.answer(f'Язык: {user.lang}')
     logger.info(f'{search_rkb_ans.__name__} is handled {UserForLogs.log_name(message)}')
 
 @router.message(F.text.casefold().in_(['/help', 'помощь']))

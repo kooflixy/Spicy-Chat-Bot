@@ -3,6 +3,7 @@ import enum
 from typing import Annotated, Optional
 from sqlalchemy import Enum, ForeignKey, String, text, BigInteger
 from sqlalchemy.orm import Mapped, mapped_column
+from sqlalchemy.dialects.postgresql import ENUM
 
 from db.schemas import UsersDTO, SpicyUsersRefreshTokensDTO
 from db.database import Base
@@ -25,7 +26,7 @@ class UsersORM(Base):
     username: Mapped[Optional[str]] = mapped_column(String(100))
     char_id: Mapped[str]
     conv_id: Mapped[str]
-    lang: Mapped[Optional[str]] = mapped_column(Enum(Langs).values_callable, default=Langs.RU)
+    lang: Mapped[Optional[str]] = mapped_column(ENUM(Langs, create_type=False).values_callable, nullable=True)
     created_at: Mapped[created_attp]
     updated_at: Mapped[updated_attp]
 
