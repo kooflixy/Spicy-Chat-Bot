@@ -1,7 +1,7 @@
 
 # Spicy-Chat-Bot
 
-Spicy-Chat-Bot - telegram bot that allows users to communicate with SpicyChat bots using SpicyAPI.
+Spicy-Chat-Bot - telegram bot that allows users to communicate with SpicyChat bots using SpicyAPI. At the moment, the built-in custom SpicyAPI does not work.
 
 
 ## Authors
